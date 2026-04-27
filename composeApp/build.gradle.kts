@@ -31,6 +31,8 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.google.maps.compose)
+            implementation(libs.play.services.maps)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -51,6 +53,10 @@ kotlin {
             
             // Persistencia Simple
             implementation("com.russhwolf:multiplatform-settings-no-arg:1.3.0")
+
+            // Location
+            api(libs.compass.geolocation)
+            implementation(libs.compass.geolocation.mobile)
         }
         val iosArm64Main by getting {
             dependencies {

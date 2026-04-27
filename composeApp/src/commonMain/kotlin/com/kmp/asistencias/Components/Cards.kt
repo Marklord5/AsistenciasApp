@@ -93,7 +93,70 @@ fun StatCard(
 }
 
 /**
- * Componente para un item individual del historial reciente.
+ * Componente de tarjeta para actividad reciente simplificada (Usada en Home).
+ */
+@Composable
+fun HomeActivityCard(
+    title: String,
+    subtitle: String,
+    time: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(32.dp))
+            .background(Color.White)
+            .padding(16.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFFF1F1F1)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = Color(0xFF8E8E93),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.width(16.dp))
+            
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 17.sp,
+                    color = Color.Black
+                )
+                Text(
+                    text = subtitle,
+                    fontSize = 14.sp,
+                    color = Color(0xFF8E8E93)
+                )
+            }
+            
+            Text(
+                text = time,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF8E8E93)
+            )
+        }
+    }
+}
+
+/**
+ * Componente para un item individual del historial reciente con línea de tiempo.
  */
 @Composable
 fun HistoryItem(
@@ -591,7 +654,3 @@ fun DocumentCard(
         }
     }
 }
-
-
-
-

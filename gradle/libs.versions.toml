@@ -14,6 +14,8 @@ junit = "4.13.2"
 kotlin = "2.3.20"
 material3 = "1.10.0-alpha05"
 ktor = "3.0.3"
+compass = "3.0.2"
+googleMaps = "4.4.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -40,6 +42,11 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+compass-geolocation = { module = "dev.jordond.compass:geolocation", version.ref = "compass" }
+compass-geolocation-mobile = { module = "dev.jordond.compass:geolocation-mobile", version.ref = "compass" }
+compass-geolocation-compose = { module = "dev.jordond.compass:geolocation-compose", version.ref = "compass" }
+google-maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "googleMaps" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version = "19.0.0" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
