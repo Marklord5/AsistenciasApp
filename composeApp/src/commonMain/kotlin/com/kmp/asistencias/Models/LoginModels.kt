@@ -13,7 +13,7 @@ data class LoginRequest(
 data class LoginResponse(
     val success: Boolean,
     val data: Tokens? = null,
-    val message: String
+    val message: String? = null
 ) {
     @Serializable
     data class Tokens(
