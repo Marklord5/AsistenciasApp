@@ -19,12 +19,7 @@ fun Documentos() {
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        Text(
-            text = "Mis Documentos",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 24.dp, top = 8.dp)
-        )
+
 
         val documentos = listOf(
             DocumentoItem("Boleta de Pago - Octubre 2023", "15 Oct 2023", "1.2 MB"),

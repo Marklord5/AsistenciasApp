@@ -25,7 +25,7 @@ import com.kmp.asistencias.components.StatCard
 import com.kmp.asistencias.components.RecentHistorySection
 
 @Composable
-fun Perfil() {
+fun Perfil(onLogout: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -102,8 +102,7 @@ fun Perfil() {
         // Botón de Cerrar Sesión
         LogoutCard(
             onClick = {
-                // Aquí agregas la lógica para cerrar sesión
-                println("Cerrando sesión...")
+                onLogout()
             },
             modifier = Modifier
                 .padding(horizontal = 16.dp)

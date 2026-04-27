@@ -9,30 +9,41 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.kmp.asistencias.Components.NavBar
+import com.kmp.asistencias.Components.TopBar
 import com.kmp.asistencias.Views.Documentos
 import com.kmp.asistencias.Views.Historial
 import com.kmp.asistencias.Views.Home
+import com.kmp.asistencias.Views.Login
 import com.kmp.asistencias.Views.Perfil
 
 @Composable
 fun App() {
+    var isLoggedIn by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf(0) }
+    val titles = listOf("Inicio", "Historial", "Lector QR", "Reportes", "Perfil")
 
-    Scaffold(
-        bottomBar = {
-            NavBar(
-                selectedItem = selectedItem,
-                onItemSelected = { selectedItem = it }
-            )
-        }
-    ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
-            when (selectedItem) {
-                0 -> Home()
-                1 -> Historial()
-                2 -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Lector QR") }
-                3 -> Documentos()
-                4 -> Perfil()
+    if (!isLoggedIn) {
+        Login(onLoginSuccess = { isLoggedIn = true })
+    } else {
+        Scaffold(
+            topBar = {
+                TopBar(title = titles[selectedItem])
+            },
+            bottomBar = {
+                NavBar(
+                    selectedItem = selectedItem,
+                    onItemSelected = { selectedItem = it }
+                )
+            }
+        ) { paddingValues ->
+            Box(modifier = Modifier.padding(paddingValues)) {
+                when (selectedItem) {
+                    0 -> Home()
+                    1 -> Historial()
+                    2 -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Lector QR") }
+                    3 -> Documentos()
+                    4 -> Perfil(onLogout = { isLoggedIn = false })
+                }
             }
         }
     }
