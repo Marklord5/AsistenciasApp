@@ -193,10 +193,10 @@ fun Login(onLoginSuccess: () -> Unit) {
                                 }
                                 onLoginSuccess()
                             } else {
-                                errorMessage = "Credenciales incorrectas"
+                                errorMessage = response.message
                             }
                         } catch (e: Exception) {
-                            errorMessage = "Error de conexión: ${e.message}"
+                            errorMessage = "Error de conexión: ${e.message} "
                         } finally {
                             isLoading = false
                         }

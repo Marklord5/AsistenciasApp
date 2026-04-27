@@ -1,5 +1,6 @@
 package com.kmp.asistencias.Models
 
+import io.ktor.http.HttpMessage
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -11,7 +12,8 @@ data class LoginRequest(
 @Serializable
 data class LoginResponse(
     val success: Boolean,
-    val data: Tokens
+    val data: Tokens? = null,
+    val message: String
 ) {
     @Serializable
     data class Tokens(
