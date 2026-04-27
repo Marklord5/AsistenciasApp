@@ -24,17 +24,16 @@ import androidx.compose.ui.unit.sp
 import com.kmp.asistencias.Components.CustomTextField
 import com.kmp.asistencias.Components.PrimaryButton
 import com.kmp.asistencias.Network.LoginApi
-import com.russhwolf.multiplatformsettings.Settings
+import com.russhwolf.settings.Settings
 import kotlinx.coroutines.launch
 
 @Composable
 fun Login(onLoginSuccess: () -> Unit) {
     val settings = remember { Settings() }
     
-    // Cargamos valores iniciales de persistencia
-    var email by remember { mutableStateOf(settings.getString("saved_email", "")) }
-    var password by remember { mutableStateOf(settings.getString("saved_password", "")) }
-    var rememberMe by remember { mutableStateOf(settings.getBoolean("remember_me", false)) }
+    var email by remember { mutableStateOf(settings.getString("email", "")) }
+    var password by remember { mutableStateOf(settings.getString("pass", "")) }
+    var rememberMe by remember { mutableStateOf(settings.getBoolean("rem", false)) }
     
     val scope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
@@ -54,16 +53,14 @@ fun Login(onLoginSuccess: () -> Unit) {
                 .fillMaxWidth()
                 .height(260.dp)
                 .clip(RoundedCornerShape(48.dp))
-                .background(Color(0xFF1A1A1A)) // Fondo oscuro mientras no hay imagen
+                .background(Color(0xFF1A1A1A)) 
         ) {
-            // Logo GeoTime en la parte inferior izquierda de la imagen
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(24.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Icono circular amarillo del logo
                 Box(
                     modifier = Modifier
                         .size(32.dp)
@@ -72,7 +69,7 @@ fun Login(onLoginSuccess: () -> Unit) {
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Email, // Placeholder icon
+                        imageVector = Icons.Default.Email,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
                         tint = Color.Black
@@ -90,7 +87,6 @@ fun Login(onLoginSuccess: () -> Unit) {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // Textos de Bienvenida
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "Bienvenido de nuevo",
@@ -110,7 +106,6 @@ fun Login(onLoginSuccess: () -> Unit) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Campos de Texto
         CustomTextField(
             value = email,
             onValueChange = { email = it },
@@ -131,7 +126,6 @@ fun Login(onLoginSuccess: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Fila de Recordar y Olvidaste contraseña
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -177,7 +171,6 @@ fun Login(onLoginSuccess: () -> Unit) {
             )
         }
 
-        // Botón Iniciar Sesión
         PrimaryButton(
             text = if (isLoading) "Cargando..." else "Iniciar Sesión",
             onClick = {
@@ -188,17 +181,16 @@ fun Login(onLoginSuccess: () -> Unit) {
                         try {
                             val response = LoginApi.login(email, password)
                             if (response.success) {
-                                // Guardar o limpiar credenciales según 'rememberMe'
+                                // Guardar o borrar según el switch de recordar
                                 if (rememberMe) {
-                                    settings.putString("saved_email", email)
-                                    settings.putString("saved_password", password)
-                                    settings.putBoolean("remember_me", true)
+                                    settings.putString("email", email)
+                                    settings.putString("pass", password)
+                                    settings.putBoolean("rem", true)
                                 } else {
-                                    settings.remove("saved_email")
-                                    settings.remove("saved_password")
-                                    settings.putBoolean("remember_me", false)
+                                    settings.remove("email")
+                                    settings.remove("pass")
+                                    settings.putBoolean("rem", false)
                                 }
-
                                 onLoginSuccess()
                             } else {
                                 errorMessage = "Credenciales incorrectas"
@@ -215,7 +207,6 @@ fun Login(onLoginSuccess: () -> Unit) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Footer: Registro
         Text(
             text = buildAnnotatedString {
                 withStyle(style = SpanStyle(color = Color(0xFF8E8E93))) {
@@ -231,7 +222,6 @@ fun Login(onLoginSuccess: () -> Unit) {
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        // Versión y Copyright
         Text(
             text = "TSDN v1.0.0 © 2025",
             fontSize = 13.sp,

@@ -49,8 +49,8 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.client.logging)
             
-            // Persistence
-            implementation(libs.settings)
+            // Persistencia Simple
+            implementation("com.russhwolf:multiplatform-settings-no-arg:1.3.0")
         }
         val iosArm64Main by getting {
             dependencies {
