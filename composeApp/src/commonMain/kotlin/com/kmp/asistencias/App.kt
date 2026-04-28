@@ -41,7 +41,6 @@ fun App() {
                 // Añadimos padding inferior aquí (100dp aprox para librar la píldora)
                 Box(modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 100.dp) 
                 ) {
                     when (selectedItem) {
                         0 -> Home()
