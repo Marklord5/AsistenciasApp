@@ -27,6 +27,10 @@ import androidx.compose.ui.unit.sp
 import com.kmp.asistencias.Components.CustomTextField
 import com.kmp.asistencias.Components.PrimaryButton
 import com.kmp.asistencias.Network.LoginApi
+import com.kmp.asistencias.Themes.BackgroundWhite
+import com.kmp.asistencias.Themes.BlueCyan
+import com.kmp.asistencias.Themes.PrimaryGradient
+import com.kmp.asistencias.Themes.White
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.launch
 
@@ -46,7 +50,7 @@ fun Login(onLoginSuccess: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(BackgroundWhite)
             .statusBarsPadding()
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
@@ -63,7 +67,7 @@ fun Login(onLoginSuccess: () -> Unit) {
                 .fillMaxWidth()
                 .height(260.dp)
                 .clip(RoundedCornerShape(48.dp))
-                .background(Color(0xFF1A1A1A)) 
+                .background(PrimaryGradient) 
         ) {
             Row(
                 modifier = Modifier
@@ -73,23 +77,23 @@ fun Login(onLoginSuccess: () -> Unit) {
             ) {
                 Box(
                     modifier = Modifier
-                        .size(32.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFFFAFD2E)),
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(White),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Email,
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                        tint = Color.Black
+                        modifier = Modifier.size(24.dp),
+                        tint = BlueCyan
                     )
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "GeoTime",
-                    color = Color.White,
-                    fontSize = 24.sp,
+                    text = "Asistencias",
+                    color = White,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
