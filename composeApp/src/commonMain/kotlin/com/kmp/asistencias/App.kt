@@ -1,13 +1,18 @@
 package com.kmp.asistencias
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.kmp.asistencias.Components.NavBar
 import com.kmp.asistencias.Components.TopBar
@@ -32,23 +37,29 @@ fun App() {
             topBar = {
                 TopBar(title = titles[selectedItem])
             }
-        ) { paddingValues ->
+
+        )
+
+        { paddingValues ->
+            val currentBgColor = if (selectedItem == 4) Color(0xFFF2F2F7) else BackgroundWhite
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(currentBgColor)
                     .padding(top = paddingValues.calculateTopPadding())
             ) {
-                // Añadimos padding inferior aquí (100dp aprox para librar la píldora)
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                ) {
-                    when (selectedItem) {
-                        0 -> Home()
-                        1 -> Historial()
-                        2 -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Lector QR") }
-                        3 -> Documentos()
-                        4 -> Perfil(onLogout = { isLoggedIn = false })
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        when (selectedItem) {
+                            0 -> Home()
+                            1 -> Historial()
+                            2 -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Lector QR") }
+                            3 -> Documentos()
+                            4 -> Perfil(onLogout = { isLoggedIn = false })
+                        }
                     }
+                    Spacer(modifier = Modifier.height(100.dp))
                 }
                 
                 NavBar(
@@ -58,5 +69,6 @@ fun App() {
                 )
             }
         }
+
     }
 }

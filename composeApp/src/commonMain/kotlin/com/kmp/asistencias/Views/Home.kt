@@ -74,7 +74,7 @@ fun Home() {
                         Text("Carlos Ruiz", fontWeight = FontWeight.Bold, fontSize = 20.sp)
                     }
                 }
-                
+
                 // Botón de notificación
                 Box(
                     modifier = Modifier
@@ -177,10 +177,10 @@ fun Home() {
                 text = "Desliza para entrar",
                 onConfirm = { /* Acción de entrar */ }
             )
-            
+
             Text(
                 "Asegúrate de estar en tu zona de trabajo",
-                modifier = Modifier.padding(top = 12.dp, bottom = 32.dp),
+                modifier = Modifier.padding(top = 12.dp),
                 color = Color.LightGray,
                 fontSize = 12.sp
             )
