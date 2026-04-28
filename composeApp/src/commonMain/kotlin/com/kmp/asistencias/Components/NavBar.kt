@@ -9,9 +9,13 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.kmp.asistencias.Themes.BlueDeep
+import com.kmp.asistencias.Themes.White
 
 sealed class NavItem(val title: String, val icon: ImageVector) {
     object Inicio : NavItem("Inicio", Icons.Default.Home)
@@ -34,7 +38,10 @@ fun NavBar(
         NavItem.Perfil
     )
 
-    NavigationBar {
+    NavigationBar(
+        containerColor = White,
+        contentColor = BlueDeep
+    ) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 icon = { 
@@ -45,7 +52,14 @@ fun NavBar(
                 },
                 label = { Text(item.title) },
                 selected = selectedItem == index,
-                onClick = { onItemSelected(index) }
+                onClick = { onItemSelected(index) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = White,
+                    selectedTextColor = BlueDeep,
+                    indicatorColor = BlueDeep,
+                    unselectedIconColor = Color.Gray,
+                    unselectedTextColor = Color.Gray
+                )
             )
         }
     }

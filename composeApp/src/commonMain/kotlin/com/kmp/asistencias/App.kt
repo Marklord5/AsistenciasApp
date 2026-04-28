@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.kmp.asistencias.Components.NavBar
 import com.kmp.asistencias.Components.TopBar
+import com.kmp.asistencias.Themes.BackgroundWhite
 import com.kmp.asistencias.Views.Documentos
 import com.kmp.asistencias.Views.Historial
 import com.kmp.asistencias.Views.Home
@@ -26,6 +27,7 @@ fun App() {
         Login(onLoginSuccess = { isLoggedIn = true })
     } else {
         Scaffold(
+            containerColor = BackgroundWhite,
             topBar = {
                 TopBar(title = titles[selectedItem])
             },

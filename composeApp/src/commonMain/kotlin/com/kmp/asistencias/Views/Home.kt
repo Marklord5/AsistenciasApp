@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kmp.asistencias.Components.AttendanceMap
 import com.kmp.asistencias.Components.SlideToActButton
+import com.kmp.asistencias.Themes.BackgroundWhite
 import com.kmp.asistencias.components.HomeActivityCard
 
 @Composable
@@ -33,7 +34,7 @@ fun Home() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8F9FA)) // Color de fondo grisáceo suave
+            .background(BackgroundWhite)
             .verticalScroll(scrollState)
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally

@@ -21,6 +21,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kmp.asistencias.Themes.BlueDeep
+import com.kmp.asistencias.Themes.White
+import com.kmp.asistencias.Themes.GrayLight
+import com.kmp.asistencias.Themes.PrimaryGradient
 
 @Composable
 fun CustomTextField(
@@ -49,11 +53,11 @@ fun CustomTextField(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(32.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                unfocusedBorderColor = Color(0xFFE0E0E0),
-                focusedBorderColor = Color.Black,
-                cursorColor = Color.Black,
+                focusedContainerColor = White,
+                unfocusedContainerColor = White,
+                unfocusedBorderColor = GrayLight,
+                focusedBorderColor = BlueDeep,
+                cursorColor = BlueDeep,
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black
             ),
@@ -80,36 +84,40 @@ fun PrimaryButton(
     modifier: Modifier = Modifier,
     icon: ImageVector? = Icons.AutoMirrored.Filled.ArrowForward
 ) {
-    Button(
+    Surface(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .height(64.dp),
         shape = RoundedCornerShape(32.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFFAFD2E), // Amarillo brillante
-            contentColor = Color.Black
-        ),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 2.dp)
+        color = Color.Transparent
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(PrimaryGradient),
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = text.uppercase(),
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 18.sp,
-                letterSpacing = 0.5.sp
-            )
-            if (icon != null) {
-                Spacer(modifier = Modifier.width(8.dp))
-                Icon(
-                    imageVector = icon, 
-                    contentDescription = null, 
-                    modifier = Modifier.size(24.dp),
-                    tint = Color.Black
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = text.uppercase(),
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 18.sp,
+                    letterSpacing = 0.5.sp,
+                    color = White
                 )
+                if (icon != null) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        imageVector = icon, 
+                        contentDescription = null, 
+                        modifier = Modifier.size(24.dp),
+                        tint = White
+                    )
+                }
             }
         }
     }

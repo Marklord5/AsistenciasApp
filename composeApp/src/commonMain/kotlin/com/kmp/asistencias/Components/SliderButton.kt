@@ -25,10 +25,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kmp.asistencias.Themes.BlueDeep
+import com.kmp.asistencias.Themes.White
+import com.kmp.asistencias.Themes.BlueCyan
+import com.kmp.asistencias.Themes.PrimaryGradient
 
 
 /* BOTON DEZLIZABLE DE HOME */
@@ -51,7 +54,7 @@ fun SlideToActButton(
             .fillMaxWidth()
             .height(trackHeight)
             .clip(RoundedCornerShape(trackHeight / 2))
-            .background(Color.Black)
+            .background(PrimaryGradient)
             .padding(padding),
         contentAlignment = Alignment.CenterStart
     ) {
@@ -63,7 +66,7 @@ fun SlideToActButton(
         ) {
             Text(
                 text = text.uppercase(),
-                color = Color.White,
+                color = White,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 18.sp,
                 letterSpacing = 1.sp
@@ -72,7 +75,7 @@ fun SlideToActButton(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = null,
-                tint = Color.White.copy(alpha = 0.3f),
+                tint = White.copy(alpha = 0.3f),
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -82,14 +85,14 @@ fun SlideToActButton(
             modifier = Modifier
                 .size(thumbSize)
                 .clip(CircleShape)
-                .background(Color(0xFFFAFD2E)) // Amarillo
+                .background(White) // Blanco o Cyan para resaltar
                 .clickable { onConfirm() }, // Por ahora lo hacemos clickeable para funcionalidad
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = null,
-                tint = Color.Black,
+                tint = BlueDeep,
                 modifier = Modifier.size(32.dp)
             )
         }
