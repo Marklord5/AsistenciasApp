@@ -87,7 +87,7 @@ fun AttendanceMap(
             ) {
                 Icon(Icons.Default.MyLocation, null, Modifier.size(18.dp), Color(0xFF007AFF))
                 Column {
-                    Text("COORDENADAS", fontSize = 10.sp, fontWeight = FontWeight.ExtraBold, color = Color.Gray)
+                    Text("Ubicación Actual", fontSize = 10.sp, fontWeight = FontWeight.ExtraBold, color = Color.Gray)
                     Text("${userLat.toString().take(8)}, ${userLon.toString().take(8)}", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
             }
