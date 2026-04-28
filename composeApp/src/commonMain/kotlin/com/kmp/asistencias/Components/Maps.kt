@@ -72,7 +72,12 @@ fun AttendanceMap(
             modifier = Modifier.fillMaxSize(),
             latitude = mapLat,
             longitude = mapLon,
-            zoom = 15f
+            zoom = 15f,
+            onCameraChange = { lat, lon ->
+                mapLat = lat
+                mapLon = lon
+                currentLocationName = "${lat.toString().take(8)}, ${lon.toString().take(8)}"
+            }
         )
 
         // Overlay de información
@@ -169,5 +174,6 @@ expect fun GoogleMapView(
     modifier: Modifier,
     latitude: Double,
     longitude: Double,
-    zoom: Float = 15f
+    zoom: Float = 15f,
+    onCameraChange: (Double, Double) -> Unit = { _, _ -> }
 )
