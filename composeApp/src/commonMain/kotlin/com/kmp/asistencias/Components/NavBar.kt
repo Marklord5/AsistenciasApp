@@ -29,7 +29,7 @@ sealed class NavItem(val title: String, val icon: ImageVector) {
     data object Inicio : NavItem("Inicio", Icons.Default.Home)
     data object Historial : NavItem("Historial", Icons.Default.History)
     data object LectorQR : NavItem("Lector QR", Icons.Default.QrCodeScanner)
-    data object Reportes : NavItem("Reportes", Icons.AutoMirrored.Filled.Assignment)
+    data object Documentos : NavItem("Documentos", Icons.AutoMirrored.Filled.Assignment)
     data object Perfil : NavItem("Perfil", Icons.Default.Person)
 }
 
@@ -43,7 +43,7 @@ fun NavBar(
         NavItem.Inicio,
         NavItem.Historial,
         NavItem.LectorQR,
-        NavItem.Reportes,
+        NavItem.Documentos,
         NavItem.Perfil
     )
 

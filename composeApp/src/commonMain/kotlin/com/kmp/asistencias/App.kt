@@ -14,6 +14,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.kmp.asistencias.Components.NavBar
 import com.kmp.asistencias.Components.TopBar
 import com.kmp.asistencias.Themes.BackgroundWhite
@@ -35,12 +39,14 @@ fun App() {
         Scaffold(
             containerColor = BackgroundWhite,
             topBar = {
-                TopBar(title = titles[selectedItem])
+                TopBar(
+                    title = titles[selectedItem],
+                    onBackClick = if (selectedItem != 0) {
+                        { selectedItem = 0 }
+                    } else null
+                )
             }
-
-        )
-
-        { paddingValues ->
+        ) { paddingValues ->
             val currentBgColor = if (selectedItem == 4) Color(0xFFF2F2F7) else BackgroundWhite
 
             Box(
@@ -52,15 +58,17 @@ fun App() {
                 Column(modifier = Modifier.fillMaxSize()) {
                     Box(modifier = Modifier.weight(1f)) {
                         when (selectedItem) {
-                            0 -> Home()
+                            0 -> Home(onNavigateToHistory = { selectedItem = 1 })
                             1 -> Historial()
-                            2 -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Lector QR") }
+                            2 -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Text("Lector QR")
+                            }
                             3 -> Documentos()
                             4 -> Perfil(onLogout = { isLoggedIn = false })
                         }
                     }
                 }
-                
+
                 NavBar(
                     selectedItem = selectedItem,
                     onItemSelected = { selectedItem = it },
@@ -68,6 +76,5 @@ fun App() {
                 )
             }
         }
-
     }
 }

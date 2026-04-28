@@ -3,9 +3,13 @@ package com.kmp.asistencias.Components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -19,7 +23,10 @@ import com.kmp.asistencias.Themes.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(title: String) {
+fun TopBar(
+    title: String,
+    onBackClick: (() -> Unit)? = null
+) {
     Column {
         Box(modifier = Modifier.background(PrimaryGradient)) {
             CenterAlignedTopAppBar(
@@ -29,6 +36,17 @@ fun TopBar(title: String) {
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
+                },
+                navigationIcon = {
+                    if (onBackClick != null) {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Regresar",
+                                tint = White
+                            )
+                        }
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,

@@ -20,16 +20,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.kmp.asistencias.Components.AttendanceMap
+import com.kmp.asistencias.Components.HomeActivityCard
 import com.kmp.asistencias.Components.SlideToActButton
 import com.kmp.asistencias.Themes.BackgroundWhite
-import com.kmp.asistencias.Components.HomeActivityCard
+import com.kmp.asistencias.Themes.GrayBlue
 import com.kmp.asistencias.Utils.obtenerFechaActual
 import com.kmp.asistencias.Utils.obtenerHoraActual
 import kotlinx.coroutines.delay
 
 @Composable
-fun Home() {
+fun Home(onNavigateToHistory: () -> Unit) {
     var fecha by remember { mutableStateOf("") }
     var hora by remember { mutableStateOf("") }
 
@@ -37,7 +39,6 @@ fun Home() {
         while (true) {
             fecha = obtenerFechaActual()
             hora = obtenerHoraActual()
-
             delay(1000)
         }
     }
@@ -52,6 +53,7 @@ fun Home() {
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         // Header
         Row(
             modifier = Modifier
@@ -61,13 +63,12 @@ fun Home() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                // Avatar con indicador online
+
                 Box(contentAlignment = Alignment.BottomEnd) {
                     Box(
                         modifier = Modifier
                             .size(56.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFFE0E0E0)),
+                            .clip(CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -77,13 +78,11 @@ fun Home() {
                         )
                     }
 
-                    // Indicador verde
                     Box(
                         modifier = Modifier
                             .size(14.dp)
                             .clip(CircleShape)
                             .background(Color(0xFF4CAF50))
-                            .padding(2.dp)
                     )
                 }
 
@@ -95,16 +94,17 @@ fun Home() {
                 }
             }
 
-            // Botón de notificación
             Box(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
-                    .background(Color.White)
-                    .shadow(1.dp, CircleShape),
+                    .background(GrayBlue),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.Notifications, contentDescription = "Notificaciones")
+                Icon(
+                    Icons.Default.Notifications,
+                    contentDescription = "Notificaciones"
+                )
             }
         }
 
@@ -157,11 +157,26 @@ fun Home() {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Mapa Implementado
         AttendanceMap(
             onRecenterClick = { lat, lon ->
                 println("Recentering to: $lat, $lon")
             }
+        )
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        SlideToActButton(
+            text = "Desliza para Registrarte",
+            onConfirm = {
+                // Acción de registrar asistencia
+            }
+        )
+
+        Text(
+            text = "Asegúrate de estar en tu zona de trabajo",
+            modifier = Modifier.padding(top = 12.dp),
+            color = Color.LightGray,
+            fontSize = 12.sp
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -173,18 +188,23 @@ fun Home() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                "ACTIVIDAD RECIENTE",
+                text = "ACTIVIDAD RECIENTE",
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 14.sp,
                 color = Color.Gray
             )
 
-            TextButton(onClick = { /* Navegar al historial */ }) {
-                Text("Ver historial", color = Color.Black, fontWeight = FontWeight.Bold)
+            TextButton(
+                onClick = onNavigateToHistory
+            ) {
+                Text(
+                    text = "Ver historial",
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
 
-        // Activity Card
         HomeActivityCard(
             title = "Salida registrada",
             subtitle = "Ayer",
@@ -192,22 +212,7 @@ fun Home() {
             icon = Icons.AutoMirrored.Filled.Logout
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
-
-        // Botón Deslizar
-        SlideToActButton(
-            text = "Desliza para Registrarte",
-            onConfirm = { /* Acción de entrar */ }
-        )
-
-        Text(
-            "Asegúrate de estar en tu zona de trabajo",
-            modifier = Modifier.padding(top = 12.dp),
-            color = Color.LightGray,
-            fontSize = 12.sp
-        )
 
         Spacer(modifier = Modifier.height(120.dp))
     }
 }
-

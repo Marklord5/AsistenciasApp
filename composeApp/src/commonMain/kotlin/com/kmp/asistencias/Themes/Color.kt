@@ -13,6 +13,8 @@ val BackgroundWhite = Color(0xFFF8FAFF)
 val White = Color(0xFFFFFFFF)
 val GrayLight = Color(0xFFE1E8F0)
 
+val GrayBlue = Color(0xFFF2F6FF)
+
 // Degradado principal basado en el logo
 val PrimaryGradient = Brush.linearGradient(
     colors = listOf(BlueCyan, BlueDeep)
@@ -22,3 +24,4 @@ val PrimaryGradient = Brush.linearGradient(
 val SecondaryGradient = Brush.verticalGradient(
     colors = listOf(BlueLight, BlueDeep)
 )
+
