@@ -1,5 +1,6 @@
 package com.kmp.asistencias.Components
 
+// Importaciones necesarias para animaciones, diseño, íconos, estados y ubicación
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,27 +29,32 @@ import dev.jordond.compass.geolocation.Locator
 import dev.jordond.compass.geolocation.mobile.mobile
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
 @Composable
 fun AttendanceMap(
     modifier: Modifier = Modifier,
     onRecenterClick: (Double, Double) -> Unit = { _, _ -> }
 ) {
+    // Permite ejecutar tareas en segundo plano, como pedir la ubicación
     val scope = rememberCoroutineScope()
+
+    // Guarda y lee la última ubicación conocida
     val settings = remember { Settings() }
+
+    // Objeto encargado de obtener la ubicación del dispositivo
     val geolocator = remember { Geolocator(Locator.mobile()) }
 
-    // Coordenadas que controlan la cámara del mapa
+    // Coordenadas usadas para centrar el mapa
     var mapLat by remember { mutableStateOf(settings.getDouble("last_lat", 0.0)) }
     var mapLon by remember { mutableStateOf(settings.getDouble("last_lon", 0.0)) }
 
-    // Coordenadas reales del usuario (solo se actualizan por GPS)
+    // Coordenadas reales del usuario
     var userLat by remember { mutableStateOf(settings.getDouble("last_lat", 0.0)) }
     var userLon by remember { mutableStateOf(settings.getDouble("last_lon", 0.0)) }
 
+    // Indica si se está buscando la ubicación
     var isFetching by remember { mutableStateOf(false) }
 
-    // Actualiza la ubicación del usuario y recentra el mapa
+    // Actualiza la ubicación, centra el mapa y guarda los datos
     fun updateLocation(newLat: Double, newLon: Double) {
         userLat = newLat
         userLon = newLon
@@ -58,27 +64,48 @@ fun AttendanceMap(
         settings["last_lon"] = newLon
     }
 
+    // Se ejecuta al cargar la pantalla para obtener la ubicación inicial
     LaunchedEffect(Unit) {
-        // 1. Intentar ubicación de caché del sistema (Casi instantáneo)
-        geolocator.lastLocation().onSuccess { updateLocation(it.coordinates.latitude, it.coordinates.longitude) }
-        
-        // 2. Refinar con ubicación actual en segundo plano
-        geolocator.current(Priority.Balanced).onSuccess { updateLocation(it.coordinates.latitude, it.coordinates.longitude) }
+        // Obtiene una ubicación rápida guardada por el sistema
+        geolocator.lastLocation().onSuccess {
+            updateLocation(it.coordinates.latitude, it.coordinates.longitude)
+        }
+
+        // Obtiene una ubicación más actual
+        geolocator.current(Priority.Balanced).onSuccess {
+            updateLocation(it.coordinates.latitude, it.coordinates.longitude)
+        }
     }
 
-    Box(modifier.fillMaxWidth().height(300.dp).clip(RoundedCornerShape(40.dp)).background(Color(0xFFE8EDF2))) {
+    // Contenedor principal del mapa
+    Box(
+        modifier
+            .fillMaxWidth()
+            .height(300.dp)
+            .clip(RoundedCornerShape(40.dp))
+            .background(Color(0xFFE8EDF2))
+    ) {
+        // Muestra el mapa usando las coordenadas actuales
         GoogleMapView(
             modifier = Modifier.fillMaxSize(),
             latitude = mapLat,
             longitude = mapLon,
-            onCameraChange = { nLat, nLon -> mapLat = nLat; mapLon = nLon }
+
+            // Si el usuario mueve el mapa, se actualiza la posición visual
+            onCameraChange = { nLat, nLon ->
+                mapLat = nLat
+                mapLon = nLon
+            }
         )
 
-
-
+        // Tarjeta que muestra las coordenadas del usuario
         Surface(
-            Modifier.padding(20.dp).align(Alignment.TopStart),
-            RoundedCornerShape(24.dp), Color.White.copy(0.95f), shadowElevation = 2.dp
+            Modifier
+                .padding(20.dp)
+                .align(Alignment.TopStart),
+            RoundedCornerShape(24.dp),
+            Color.White.copy(0.95f),
+            shadowElevation = 2.dp
         ) {
             Row(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
@@ -86,34 +113,64 @@ fun AttendanceMap(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(Icons.Default.MyLocation, null, Modifier.size(18.dp), Color(0xFF007AFF))
+
                 Column {
-                    Text("Ubicación Actual", fontSize = 10.sp, fontWeight = FontWeight.ExtraBold, color = Color.Gray)
-                    Text("${userLat.toString().take(8)}, ${userLon.toString().take(8)}", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        "COORDENADAS",
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.Gray
+                    )
+
+                    Text(
+                        "${userLat.toString().take(8)}, ${userLon.toString().take(8)}",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
 
-        // Botón Recentrar simple
+        // Botón para volver a centrar el mapa en la ubicación actual
         Box(
-            Modifier.padding(20.dp).align(Alignment.BottomStart).size(56.dp).clip(CircleShape).background(Color.White)
+            Modifier
+                .padding(20.dp)
+                .align(Alignment.BottomStart)
+                .size(56.dp)
+                .clip(CircleShape)
+                .background(Color.White)
                 .clickable {
                     scope.launch {
                         isFetching = true
+
+                        // Busca la ubicación exacta actual
                         geolocator.current(Priority.HighAccuracy).onSuccess {
-                            updateLocation(it.coordinates.latitude, it.coordinates.longitude)
+                            updateLocation(
+                                it.coordinates.latitude,
+                                it.coordinates.longitude
+                            )
+
+                            // Notifica hacia afuera la nueva ubicación
                             onRecenterClick(userLat, userLon)
                         }
+
                         delay(800)
                         isFetching = false
                     }
                 },
             Alignment.Center
         ) {
-            Icon(Icons.Default.MyLocation, null, Modifier.size(24.dp), if (isFetching) Color(0xFF007AFF) else Color.Black)
+            Icon(
+                Icons.Default.MyLocation,
+                null,
+                Modifier.size(24.dp),
+                if (isFetching) Color(0xFF007AFF) else Color.Black
+            )
         }
     }
 }
 
+// Función esperada para mostrar el mapa según la plataforma
 @Composable
 expect fun GoogleMapView(
     modifier: Modifier,
