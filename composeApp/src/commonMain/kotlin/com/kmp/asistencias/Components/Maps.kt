@@ -1,9 +1,7 @@
 package com.kmp.asistencias.Components
 
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -22,6 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.russhwolf.settings.Settings
+import com.russhwolf.settings.set
 import dev.jordond.compass.Priority
 import dev.jordond.compass.geolocation.Geolocator
 import dev.jordond.compass.geolocation.Locator
@@ -29,145 +29,90 @@ import dev.jordond.compass.geolocation.mobile.mobile
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/**
- * Componente de Mapa interactivo con ubicación real.
- */
 @Composable
 fun AttendanceMap(
     modifier: Modifier = Modifier,
-    locationName: String = "Buscando ubicación...",
     onRecenterClick: (Double, Double) -> Unit = { _, _ -> }
 ) {
     val scope = rememberCoroutineScope()
-    var isRecenterAnimating by remember { mutableStateOf(false) }
-    var currentLocationName by remember(locationName) { mutableStateOf(locationName) }
-    
-    // Inicializamos el Geolocator manualmente si el helper de compose falla
+    val settings = remember { Settings() }
     val geolocator = remember { Geolocator(Locator.mobile()) }
-    
-    // Animación de rebote para el Pin
-    val infiniteTransition = rememberInfiniteTransition()
-    val pinBounce by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = if (isRecenterAnimating) -15f else 0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(500, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
 
-    // Estado para las coordenadas actuales del mapa
-    var mapLat by remember { mutableStateOf(19.4326) }
-    var mapLon by remember { mutableStateOf(-99.1332) }
+    // Coordenadas que controlan la cámara del mapa
+    var mapLat by remember { mutableStateOf(settings.getDouble("last_lat", 0.0)) }
+    var mapLon by remember { mutableStateOf(settings.getDouble("last_lon", 0.0)) }
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(300.dp)
-            .clip(RoundedCornerShape(40.dp))
-            .background(Color(0xFFE8EDF2))
-    ) {
-        // Mapa Real
+    // Coordenadas reales del usuario (solo se actualizan por GPS)
+    var userLat by remember { mutableStateOf(settings.getDouble("last_lat", 0.0)) }
+    var userLon by remember { mutableStateOf(settings.getDouble("last_lon", 0.0)) }
+
+    var isFetching by remember { mutableStateOf(false) }
+
+    // Actualiza la ubicación del usuario y recentra el mapa
+    fun updateLocation(newLat: Double, newLon: Double) {
+        userLat = newLat
+        userLon = newLon
+        mapLat = newLat
+        mapLon = newLon
+        settings["last_lat"] = newLat
+        settings["last_lon"] = newLon
+    }
+
+    LaunchedEffect(Unit) {
+        // 1. Intentar ubicación de caché del sistema (Casi instantáneo)
+        geolocator.lastLocation().onSuccess { updateLocation(it.coordinates.latitude, it.coordinates.longitude) }
+        
+        // 2. Refinar con ubicación actual en segundo plano
+        geolocator.current(Priority.Balanced).onSuccess { updateLocation(it.coordinates.latitude, it.coordinates.longitude) }
+    }
+
+    Box(modifier.fillMaxWidth().height(300.dp).clip(RoundedCornerShape(40.dp)).background(Color(0xFFE8EDF2))) {
         GoogleMapView(
             modifier = Modifier.fillMaxSize(),
             latitude = mapLat,
             longitude = mapLon,
-            zoom = 15f,
-            onCameraChange = { lat, lon ->
-                mapLat = lat
-                mapLon = lon
-                currentLocationName = "${lat.toString().take(8)}, ${lon.toString().take(8)}"
-            }
+            onCameraChange = { nLat, nLon -> mapLat = nLat; mapLon = nLon }
         )
 
-        // Overlay de información
+
+
         Surface(
-            modifier = Modifier
-                .padding(20.dp)
-                .align(Alignment.TopStart),
-            shape = RoundedCornerShape(24.dp),
-            color = Color.White.copy(alpha = 0.95f),
-            shadowElevation = 2.dp
+            Modifier.padding(20.dp).align(Alignment.TopStart),
+            RoundedCornerShape(24.dp), Color.White.copy(0.95f), shadowElevation = 2.dp
         ) {
             Row(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.MyLocation,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                    tint = Color(0xFF007AFF)
-                )
+                Icon(Icons.Default.MyLocation, null, Modifier.size(18.dp), Color(0xFF007AFF))
                 Column {
-                    Text(
-                        "UBICACIÓN ACTUAL",
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.LightGray
-                    )
-                    Text(
-                        currentLocationName,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Text("COORDENADAS", fontSize = 10.sp, fontWeight = FontWeight.ExtraBold, color = Color.Gray)
+                    Text("${userLat.toString().take(8)}, ${userLon.toString().take(8)}", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
 
-        // Botón interactivo de Recentrar
+        // Botón Recentrar simple
         Box(
-            modifier = Modifier
-                .padding(end = 20.dp)
-                .align(Alignment.BottomStart)
-                .size(56.dp)
-                .clip(CircleShape)
-                .background(Color.White)
+            Modifier.padding(20.dp).align(Alignment.BottomStart).size(56.dp).clip(CircleShape).background(Color.White)
                 .clickable {
                     scope.launch {
-                        isRecenterAnimating = true
-                        try {
-                            // Intentamos obtener la ubicación actual
-                            geolocator.current(Priority.HighAccuracy)
-                                .onSuccess { location ->
-
-                                    val lat = location.coordinates.latitude
-                                    val lon = location.coordinates.longitude
-
-                                    // Actualiza el marcador
-                                    mapLat = lat
-                                    mapLon = lon
-
-                                    // Actualiza el texto de ubicación
-                                    currentLocationName = "${lat.toString().take(8)}, ${lon.toString().take(8)}"
-
-                                    // Fuerza que la vista del mapa se recenter siempre
-                                    onRecenterClick(lat, lon)
-                                }
-                                .onFailed { error ->
-                                    currentLocationName = "Error: ${error.message}"
-                                }
-                        } catch (e: Exception) {
-                            currentLocationName = "Permiso denegado o error"
+                        isFetching = true
+                        geolocator.current(Priority.HighAccuracy).onSuccess {
+                            updateLocation(it.coordinates.latitude, it.coordinates.longitude)
+                            onRecenterClick(userLat, userLon)
                         }
-                        delay(1200)
-                        isRecenterAnimating = false
+                        delay(800)
+                        isFetching = false
                     }
                 },
-            contentAlignment = Alignment.Center
+            Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.MyLocation,
-                contentDescription = "Recenter",
-                tint = if (isRecenterAnimating) Color(0xFF007AFF) else Color.Black,
-                modifier = Modifier.size(24.dp)
-            )
+            Icon(Icons.Default.MyLocation, null, Modifier.size(24.dp), if (isFetching) Color(0xFF007AFF) else Color.Black)
         }
     }
 }
-
-
 
 @Composable
 expect fun GoogleMapView(

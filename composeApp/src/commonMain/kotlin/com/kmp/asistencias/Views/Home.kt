@@ -137,7 +137,6 @@ fun Home() {
 
             // Mapa Implementado
             AttendanceMap(
-                locationName = "Oficinas Centrales, MX",
                 onRecenterClick = { lat, lon ->
                     // Aquí podrías disparar la lógica de GPS real con lat/lon
                     println("Recentering to: $lat, $lon")
