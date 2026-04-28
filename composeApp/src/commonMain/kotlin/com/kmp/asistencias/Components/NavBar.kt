@@ -26,11 +26,11 @@ import com.kmp.asistencias.Themes.BlueDeep
 import com.kmp.asistencias.Themes.White
 
 sealed class NavItem(val title: String, val icon: ImageVector) {
-    object Inicio : NavItem("Inicio", Icons.Default.Home)
-    object Historial : NavItem("Historial", Icons.Default.History)
-    object LectorQR : NavItem("Lector QR", Icons.Default.QrCodeScanner)
-    object Reportes : NavItem("Reportes", Icons.AutoMirrored.Filled.Assignment)
-    object Perfil : NavItem("Perfil", Icons.Default.Person)
+    data object Inicio : NavItem("Inicio", Icons.Default.Home)
+    data object Historial : NavItem("Historial", Icons.Default.History)
+    data object LectorQR : NavItem("Lector QR", Icons.Default.QrCodeScanner)
+    data object Reportes : NavItem("Reportes", Icons.AutoMirrored.Filled.Assignment)
+    data object Perfil : NavItem("Perfil", Icons.Default.Person)
 }
 
 @Composable
@@ -47,48 +47,62 @@ fun NavBar(
         NavItem.Perfil
     )
 
-    Surface(
+    // Contenedor principal para centrar la píldora
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 20.dp)
-            .height(80.dp),
-        shape = CircleShape,
-        color = White,
-        shadowElevation = 15.dp
+            .padding(bottom = 30.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Row(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
+        Surface(
+            modifier = Modifier
+                .wrapContentWidth()
+                .height(72.dp),
+            shape = CircleShape,
+            color = White,
+            shadowElevation = 12.dp
         ) {
-            items.forEachIndexed { index, item ->
-                val isSelected = selectedItem == index
-                
-                Box(
-                    modifier = Modifier
-                        .size(if (isSelected) 64.dp else 50.dp)
-                        .clip(CircleShape)
-                        .background(if (isSelected) BlueDeep else Color.Transparent)
-                        .clickable { onItemSelected(index) },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 12.dp)
+                    .fillMaxHeight(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                items.forEachIndexed { index, item ->
+                    val isSelected = selectedItem == index
+                    
+                    Box(
+                        modifier = Modifier
+                            .height(56.dp)
+                            .then(if (isSelected) Modifier.padding(horizontal = 4.dp) else Modifier)
+                            .clip(CircleShape)
+                            .background(if (isSelected) BlueDeep else Color.Transparent)
+                            .clickable { onItemSelected(index) }
+                            .padding(horizontal = if (isSelected) 20.dp else 12.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            imageVector = item.icon,
-                            contentDescription = item.title,
-                            tint = if (isSelected) White else Color.Gray,
-                            modifier = Modifier.size(if (isSelected) 28.dp else 24.dp)
-                        )
-                        if (!isSelected) {
-                            Text(
-                                text = item.title,
-                                fontSize = 10.sp,
-                                color = Color.Gray,
-                                fontWeight = FontWeight.Medium
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = item.icon,
+                                contentDescription = item.title,
+                                tint = if (isSelected) White else Color.Gray,
+                                modifier = Modifier.size(24.dp)
                             )
+                            
+                            if (isSelected) {
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = item.title,
+                                    fontSize = 14.sp,
+                                    color = White,
+                                    fontWeight = FontWeight.Bold,
+                                    maxLines = 1
+                                )
+                            }
                         }
                     }
                 }

@@ -24,10 +24,9 @@ import com.kmp.asistencias.Components.AttendanceMap
 import com.kmp.asistencias.Components.SlideToActButton
 import com.kmp.asistencias.Themes.BackgroundWhite
 import com.kmp.asistencias.Components.HomeActivityCard
+import com.kmp.asistencias.Utils.obtenerFechaActual
+import com.kmp.asistencias.Utils.obtenerHoraActual
 import kotlinx.coroutines.delay
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun Home() {
@@ -36,10 +35,8 @@ fun Home() {
 
     LaunchedEffect(Unit) {
         while (true) {
-            val fechaHora = obtenerFechaHoraActual()
-
-            fecha = fechaHora.first
-            hora = fechaHora.second
+            fecha = obtenerFechaActual()
+            hora = obtenerHoraActual()
 
             delay(1000)
         }
@@ -214,24 +211,3 @@ fun Home() {
     }
 }
 
-fun obtenerFechaHoraActual(): Pair<String, String> {
-    val now = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-
-    val dias = listOf(
-        "LUNES", "MARTES", "MIÉRCOLES",
-        "JUEVES", "VIERNES", "SÁBADO", "DOMINGO"
-    )
-
-    val meses = listOf(
-        "ENERO", "FEBRERO", "MARZO", "ABRIL",
-        "MAYO", "JUNIO", "JULIO", "AGOSTO",
-        "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
-    )
-
-    val fecha = "${dias[now.dayOfWeek.ordinal]}, ${now.dayOfMonth} DE ${meses[now.monthNumber - 1]}"
-
-    val hora = "${now.hour.toString().padStart(2, '0')}:${now.minute.toString().padStart(2, '0')}"
-
-    return fecha to hora
-}
