@@ -42,7 +42,7 @@ fun Login(onLoginSuccess: () -> Unit) {
     var email by remember { mutableStateOf(settings.getString("email", "")) }
     var password by remember { mutableStateOf(settings.getString("pass", "")) }
     var rememberMe by remember { mutableStateOf(settings.getBoolean("rem", false)) }
-    
+
     val scope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -195,7 +195,10 @@ fun Login(onLoginSuccess: () -> Unit) {
                         try {
                             val response = LoginApi.login(email, password)
                             if (response.success) {
-                                // Guardar o borrar según el switch de recordar
+
+                                settings.putString("token", response.data?.access_token ?: "")
+                                settings.putString("tokenRefresh", response.data?.refresh_token ?: "")
+
                                 if (rememberMe) {
                                     settings.putString("email", email)
                                     settings.putString("pass", password)
