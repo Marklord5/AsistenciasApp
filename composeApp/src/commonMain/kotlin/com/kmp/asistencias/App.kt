@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.kmp.asistencias.Components.NavBar
 import com.kmp.asistencias.Components.TopBar
 import com.kmp.asistencias.Themes.BackgroundWhite
@@ -30,22 +31,32 @@ fun App() {
             containerColor = BackgroundWhite,
             topBar = {
                 TopBar(title = titles[selectedItem])
-            },
-            bottomBar = {
-                NavBar(
-                    selectedItem = selectedItem,
-                    onItemSelected = { selectedItem = it }
-                )
             }
         ) { paddingValues ->
-            Box(modifier = Modifier.padding(paddingValues)) {
-                when (selectedItem) {
-                    0 -> Home()
-                    1 -> Historial()
-                    2 -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Lector QR") }
-                    3 -> Documentos()
-                    4 -> Perfil(onLogout = { isLoggedIn = false })
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = paddingValues.calculateTopPadding())
+            ) {
+                // Añadimos padding inferior aquí (100dp aprox para librar la píldora)
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 100.dp) 
+                ) {
+                    when (selectedItem) {
+                        0 -> Home()
+                        1 -> Historial()
+                        2 -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Lector QR") }
+                        3 -> Documentos()
+                        4 -> Perfil(onLogout = { isLoggedIn = false })
+                    }
                 }
+                
+                NavBar(
+                    selectedItem = selectedItem,
+                    onItemSelected = { selectedItem = it },
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
             }
         }
     }

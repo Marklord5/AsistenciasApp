@@ -6,14 +6,22 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.kmp.asistencias.Themes.BlueDeep
 import com.kmp.asistencias.Themes.White
 
@@ -28,7 +36,8 @@ sealed class NavItem(val title: String, val icon: ImageVector) {
 @Composable
 fun NavBar(
     selectedItem: Int,
-    onItemSelected: (Int) -> Unit
+    onItemSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val items = listOf(
         NavItem.Inicio,
@@ -38,29 +47,52 @@ fun NavBar(
         NavItem.Perfil
     )
 
-    NavigationBar(
-        containerColor = White,
-        contentColor = BlueDeep
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 20.dp)
+            .height(80.dp),
+        shape = CircleShape,
+        color = White,
+        shadowElevation = 15.dp
     ) {
-        items.forEachIndexed { index, item ->
-            NavigationBarItem(
-                icon = { 
-                    Icon(
-                        imageVector = item.icon, 
-                        contentDescription = item.title 
-                    ) 
-                },
-                label = { Text(item.title) },
-                selected = selectedItem == index,
-                onClick = { onItemSelected(index) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = White,
-                    selectedTextColor = BlueDeep,
-                    indicatorColor = BlueDeep,
-                    unselectedIconColor = Color.Gray,
-                    unselectedTextColor = Color.Gray
-                )
-            )
+        Row(
+            modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            items.forEachIndexed { index, item ->
+                val isSelected = selectedItem == index
+                
+                Box(
+                    modifier = Modifier
+                        .size(if (isSelected) 64.dp else 50.dp)
+                        .clip(CircleShape)
+                        .background(if (isSelected) BlueDeep else Color.Transparent)
+                        .clickable { onItemSelected(index) },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = item.icon,
+                            contentDescription = item.title,
+                            tint = if (isSelected) White else Color.Gray,
+                            modifier = Modifier.size(if (isSelected) 28.dp else 24.dp)
+                        )
+                        if (!isSelected) {
+                            Text(
+                                text = item.title,
+                                fontSize = 10.sp,
+                                color = Color.Gray,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
