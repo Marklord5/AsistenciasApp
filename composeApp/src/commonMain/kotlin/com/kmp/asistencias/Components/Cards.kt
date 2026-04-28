@@ -1,4 +1,4 @@
-package com.kmp.asistencias.components
+package com.kmp.asistencias.Components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

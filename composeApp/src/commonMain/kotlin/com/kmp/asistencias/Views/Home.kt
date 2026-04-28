@@ -8,12 +8,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,10 +23,28 @@ import androidx.compose.ui.unit.sp
 import com.kmp.asistencias.Components.AttendanceMap
 import com.kmp.asistencias.Components.SlideToActButton
 import com.kmp.asistencias.Themes.BackgroundWhite
-import com.kmp.asistencias.components.HomeActivityCard
+import com.kmp.asistencias.Components.HomeActivityCard
+import kotlinx.coroutines.delay
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun Home() {
+    var fecha by remember { mutableStateOf("") }
+    var hora by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            val fechaHora = obtenerFechaHoraActual()
+
+            fecha = fechaHora.first
+            hora = fechaHora.second
+
+            delay(1000)
+        }
+    }
+
     val scrollState = rememberScrollState()
 
     Column(
@@ -43,146 +59,179 @@ fun Home() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 24.dp), // Un pequeño padding superior para que no pegue al TopBar
+                .padding(top = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Avatar con indicador online
-                    Box(contentAlignment = Alignment.BottomEnd) {
-                        Box(
-                            modifier = Modifier
-                                .size(56.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFFE0E0E0)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(32.dp))
-                        }
-                        // Indicador verde
-                        Box(
-                            modifier = Modifier
-                                .size(14.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFF4CAF50))
-                                .padding(2.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text("Bienvenido,", color = Color.Gray, fontSize = 16.sp)
-                        Text("Carlos Ruiz", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                    }
-                }
-
-                // Botón de notificación
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(Color.White)
-                        .shadow(1.dp, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.Notifications, contentDescription = "Notificaciones")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Fecha y Hora
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = "LUNES, 24 DE OCTUBRE",
-                    color = Color.Gray,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    letterSpacing = 1.sp
-                )
-                Text(
-                    text = "08:45",
-                    fontSize = 72.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF1A1C1E)
-                )
-            }
-
-            // Status Badge
-            Surface(
-                color = Color(0xFFFFF1F1),
-                shape = RoundedCornerShape(24.dp),
-                modifier = Modifier.padding(vertical = 8.dp)
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Avatar con indicador online
+                Box(contentAlignment = Alignment.BottomEnd) {
                     Box(
                         modifier = Modifier
-                            .size(10.dp)
+                            .size(56.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFFFF3B30))
+                            .background(Color(0xFFE0E0E0)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.Person,
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+
+                    // Indicador verde
+                    Box(
+                        modifier = Modifier
+                            .size(14.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF4CAF50))
+                            .padding(2.dp)
                     )
-                    Text(
-                        text = "Fuera de turno",
-                        color = Color(0xFFFF3B30),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Column {
+                    Text("Bienvenido,", color = Color.Gray, fontSize = 16.sp)
+                    Text("Carlos Ruiz", fontWeight = FontWeight.Bold, fontSize = 20.sp)
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Mapa Implementado
-            AttendanceMap(
-                onRecenterClick = { lat, lon ->
-                    // Aquí podrías disparar la lógica de GPS real con lat/lon
-                    println("Recentering to: $lat, $lon")
-                }
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Actividad Reciente Header
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Botón de notificación
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(Color.White)
+                    .shadow(1.dp, CircleShape),
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    "ACTIVIDAD RECIENTE",
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 14.sp,
-                    color = Color.Gray
-                )
-                TextButton(onClick = { /* Navegar al historial */ }) {
-                    Text("Ver historial", color = Color.Black, fontWeight = FontWeight.Bold)
-                }
+                Icon(Icons.Default.Notifications, contentDescription = "Notificaciones")
             }
+        }
 
-            // Activity Card
-            HomeActivityCard(
-                title = "Salida registrada",
-                subtitle = "Ayer",
-                time = "18:02",
-                icon = Icons.AutoMirrored.Filled.Logout
-            )
+        Spacer(modifier = Modifier.height(32.dp))
 
-            Spacer(modifier = Modifier.height(40.dp))
-
-            // Botón Deslizar
-            SlideToActButton(
-                text = "Desliza para entrar",
-                onConfirm = { /* Acción de entrar */ }
+        // Fecha y Hora
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = fecha,
+                color = Color.Gray,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                letterSpacing = 1.sp
             )
 
             Text(
-                "Asegúrate de estar en tu zona de trabajo",
-                modifier = Modifier.padding(top = 12.dp),
-                color = Color.LightGray,
-                fontSize = 12.sp
+                text = hora,
+                fontSize = 72.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color(0xFF1A1C1E)
             )
         }
+
+        // Status Badge
+        Surface(
+            color = Color(0xFFFFF1F1),
+            shape = RoundedCornerShape(24.dp),
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFFF3B30))
+                )
+
+                Text(
+                    text = "Fuera de turno",
+                    color = Color(0xFFFF3B30),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Mapa Implementado
+        AttendanceMap(
+            onRecenterClick = { lat, lon ->
+                println("Recentering to: $lat, $lon")
+            }
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Actividad Reciente Header
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "ACTIVIDAD RECIENTE",
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
+
+            TextButton(onClick = { /* Navegar al historial */ }) {
+                Text("Ver historial", color = Color.Black, fontWeight = FontWeight.Bold)
+            }
+        }
+
+        // Activity Card
+        HomeActivityCard(
+            title = "Salida registrada",
+            subtitle = "Ayer",
+            time = "18:02",
+            icon = Icons.AutoMirrored.Filled.Logout
+        )
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        // Botón Deslizar
+        SlideToActButton(
+            text = "Desliza para Registrarte",
+            onConfirm = { /* Acción de entrar */ }
+        )
+
+        Text(
+            "Asegúrate de estar en tu zona de trabajo",
+            modifier = Modifier.padding(top = 12.dp),
+            color = Color.LightGray,
+            fontSize = 12.sp
+        )
+
+        Spacer(modifier = Modifier.height(120.dp))
+    }
+}
+
+fun obtenerFechaHoraActual(): Pair<String, String> {
+    val now = Clock.System.now()
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+
+    val dias = listOf(
+        "LUNES", "MARTES", "MIÉRCOLES",
+        "JUEVES", "VIERNES", "SÁBADO", "DOMINGO"
+    )
+
+    val meses = listOf(
+        "ENERO", "FEBRERO", "MARZO", "ABRIL",
+        "MAYO", "JUNIO", "JULIO", "AGOSTO",
+        "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
+    )
+
+    val fecha = "${dias[now.dayOfWeek.ordinal]}, ${now.dayOfMonth} DE ${meses[now.monthNumber - 1]}"
+
+    val hora = "${now.hour.toString().padStart(2, '0')}:${now.minute.toString().padStart(2, '0')}"
+
+    return fecha to hora
 }

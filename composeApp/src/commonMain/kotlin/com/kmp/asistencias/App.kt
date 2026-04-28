@@ -59,7 +59,6 @@ fun App() {
                             4 -> Perfil(onLogout = { isLoggedIn = false })
                         }
                     }
-                    Spacer(modifier = Modifier.height(100.dp))
                 }
                 
                 NavBar(

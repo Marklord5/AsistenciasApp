@@ -57,6 +57,10 @@ kotlin {
             // Location
             api(libs.compass.geolocation)
             implementation(libs.compass.geolocation.mobile)
+            
+            // DateTime
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.kotlinx.coroutines.core)
         }
         val iosArm64Main by getting {
             dependencies {

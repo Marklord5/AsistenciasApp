@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.kmp.asistencias.components.AttendanceHistoryCard
-import com.kmp.asistencias.components.HistorySectionHeader
+import com.kmp.asistencias.Components.AttendanceHistoryCard
+import com.kmp.asistencias.Components.HistorySectionHeader
 
 @Composable
 fun Historial() {

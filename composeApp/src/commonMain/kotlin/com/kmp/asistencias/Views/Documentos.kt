@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kmp.asistencias.components.DocumentCard
+import com.kmp.asistencias.Components.DocumentCard
 
 @Composable
 fun Documentos() {

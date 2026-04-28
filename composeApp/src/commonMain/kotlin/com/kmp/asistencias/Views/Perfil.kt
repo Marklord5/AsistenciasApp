@@ -20,9 +20,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kmp.asistencias.components.LogoutCard
-import com.kmp.asistencias.components.StatCard
-import com.kmp.asistencias.components.RecentHistorySection
+import com.kmp.asistencias.Components.LogoutCard
+import com.kmp.asistencias.Components.StatCard
+import com.kmp.asistencias.Components.RecentHistorySection
 
 @Composable
 fun Perfil(onLogout: () -> Unit) {
@@ -108,5 +108,7 @@ fun Perfil(onLogout: () -> Unit) {
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 32.dp)
         )
+        Spacer(modifier = Modifier.height(120.dp))
+
     }
 }
