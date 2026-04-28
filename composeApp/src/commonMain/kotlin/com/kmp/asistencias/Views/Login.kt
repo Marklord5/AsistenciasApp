@@ -47,6 +47,7 @@ fun Login(onLoginSuccess: () -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .statusBarsPadding()
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
                     focusManager.clearFocus()
@@ -229,10 +230,10 @@ fun Login(onLoginSuccess: () -> Unit) {
             modifier = Modifier.clickable { /* TODO */ }
         )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "TSDN v1.0.0 © 2025",
+            text = "TSDN v1.0.0 © 2026",
             fontSize = 13.sp,
             color = Color(0xFFC7C7CC),
             modifier = Modifier.padding(bottom = 16.dp)

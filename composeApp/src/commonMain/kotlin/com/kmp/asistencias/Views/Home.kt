@@ -30,23 +30,22 @@ import com.kmp.asistencias.components.HomeActivityCard
 fun Home() {
     val scrollState = rememberScrollState()
 
-    Scaffold(
-        containerColor = Color(0xFFF8F9FA) // Color de fondo grisáceo suave
-    ) { paddingValues ->
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF8F9FA)) // Color de fondo grisáceo suave
+            .verticalScroll(scrollState)
+            .padding(horizontal = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Header
+        Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(scrollState)
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .padding(top = 24.dp), // Un pequeño padding superior para que no pegue al TopBar
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Header
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     // Avatar con indicador online
                     Box(contentAlignment = Alignment.BottomEnd) {
@@ -180,10 +179,9 @@ fun Home() {
             
             Text(
                 "Asegúrate de estar en tu zona de trabajo",
-                modifier = Modifier.padding(top = 12.dp),
+                modifier = Modifier.padding(top = 12.dp, bottom = 32.dp),
                 color = Color.LightGray,
                 fontSize = 12.sp
             )
         }
-    }
 }
