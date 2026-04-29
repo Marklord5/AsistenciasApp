@@ -60,11 +60,8 @@ fun App() {
                         when (selectedItem) {
                             0 -> Home(onNavigateToHistory = { selectedItem = 1 })
                             1 -> Historial()
-                            2 -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text("Lector QR")
-                            }
-                            3 -> Documentos()
-                            4 -> Perfil(onLogout = { isLoggedIn = false })
+                            2 -> Documentos()
+                            3 -> Perfil(onLogout = { isLoggedIn = false })
                         }
                     }
                 }

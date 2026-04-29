@@ -1,5 +1,6 @@
 package com.kmp.asistencias.Models
 
+import asistencias.composeapp.generated.resources.Res
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -13,8 +14,8 @@ data class PerfilUsuarioResponse(
     @Serializable
     data class Data(
         val perfil: List<Perfil>,
-        val horasHoy: Int,
-        val porcentajePuntualidad: Int,
+        val horasHoy: String,
+        val porcentajePuntualidad: Double,
         val ultimosRegistros: List<UltimoRegistro>
     )
 
@@ -28,6 +29,7 @@ data class PerfilUsuarioResponse(
     @Serializable
     data class UltimoRegistro(
         val tipo: String,
+        @SerialName("fechA_HORA")
         val fechaHora: String
     )
 }

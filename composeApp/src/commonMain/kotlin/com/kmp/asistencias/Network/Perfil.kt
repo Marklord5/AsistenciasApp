@@ -1,6 +1,7 @@
 package com.kmp.asistencias.Services
 
 import com.kmp.asistencias.Models.PerfilUsuarioResponse
+import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -13,6 +14,8 @@ import io.ktor.serialization.kotlinx.json.json
 
 object Perfil {
 
+    private val settings = Settings()
+
     private val client = HttpClient {
         install(ContentNegotiation) {
             json(Json {
@@ -22,9 +25,13 @@ object Perfil {
         }
     }
 
-    suspend fun getPerfil(token: String): PerfilUsuarioResponse =
-        client.get("https://qa-asistenciasapi.jorchav.com.mx/api/Asistencia/GetPerfilUsuario") {
+    suspend fun getPerfil(): PerfilUsuarioResponse {
+
+        val token = settings.getString("token", "")
+
+        return client.get("https://qa-asistenciasapi.jorchav.com.mx/api/Asistencia/GetPerfilUsuario") {
             header("Authorization", "Bearer $token")
             accept(ContentType.Application.Json)
         }.body()
+    }
 }

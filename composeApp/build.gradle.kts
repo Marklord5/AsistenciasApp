@@ -62,6 +62,10 @@ kotlin {
             // DateTime
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.coroutines.core)
+
+            // Lottie
+            implementation(libs.compottie)
+            implementation(libs.compottie.resources)
         }
         val iosArm64Main by getting {
             dependencies {

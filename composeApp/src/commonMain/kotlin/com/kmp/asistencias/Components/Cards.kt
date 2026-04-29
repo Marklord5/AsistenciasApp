@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kmp.asistencias.Models.PerfilUsuarioResponse
 
 /**
  * Componente para mostrar estadísticas como "Horas Hoy" o "Puntualidad".
@@ -274,6 +275,7 @@ fun HistoryItem(
  */
 @Composable
 fun RecentHistorySection(
+    registros: List<PerfilUsuarioResponse.UltimoRegistro> = emptyList(),
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -294,36 +296,47 @@ fun RecentHistorySection(
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-            Text(
+            /*Text(
                 text = "Ver todo",
                 fontSize = 14.sp,
                 color = Color.Gray
-            )
+            )*/
         }
         
         Spacer(modifier = Modifier.height(24.dp))
-        
-        HistoryItem(
-            isEntry = true,
-            title = "Entrada - Hoy",
-            time = "09:00 AM",
-            location = "Oficina Central"
-        )
-        
-        HistoryItem(
-            isEntry = false,
-            title = "Salida - Ayer",
-            time = "06:15 PM",
-            location = "Remoto"
-        )
-        
-        HistoryItem(
-            isEntry = true,
-            title = "Entrada - Ayer",
-            time = "08:55 AM",
-            location = "Remoto",
-            isLast = true
-        )
+
+        if (registros.isEmpty()) {
+            Text(
+                text = "No hay registros recientes",
+                color = Color.Gray,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+        } else {
+            registros.forEachIndexed { index, registro ->
+                // Simple parsing for display
+                val isEntry = registro.tipo.contains("Entrada", ignoreCase = true)
+                val displayTime = try {
+                    registro.fechaHora.split("T").last().substring(0, 5)
+                } catch (e: Exception) {
+                    registro.fechaHora
+                }
+                
+                val displayDate = try {
+                    registro.fechaHora.split("T").first()
+                } catch (e: Exception) {
+                    ""
+                }
+
+                HistoryItem(
+                    isEntry = isEntry,
+                    title = "${registro.tipo} - $displayDate",
+                    time = displayTime,
+                    location = "Ubicación registrada", // El modelo no trae ubicación por ahora
+                    isLast = index == registros.size - 1
+                )
+            }
+        }
     }
 }
 

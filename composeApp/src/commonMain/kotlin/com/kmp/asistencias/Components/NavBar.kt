@@ -28,7 +28,6 @@ import com.kmp.asistencias.Themes.White
 sealed class NavItem(val title: String, val icon: ImageVector) {
     data object Inicio : NavItem("Inicio", Icons.Default.Home)
     data object Historial : NavItem("Historial", Icons.Default.History)
-    data object LectorQR : NavItem("Lector QR", Icons.Default.QrCodeScanner)
     data object Documentos : NavItem("Documentos", Icons.AutoMirrored.Filled.Assignment)
     data object Perfil : NavItem("Perfil", Icons.Default.Person)
 }
@@ -42,7 +41,6 @@ fun NavBar(
     val items = listOf(
         NavItem.Inicio,
         NavItem.Historial,
-        NavItem.LectorQR,
         NavItem.Documentos,
         NavItem.Perfil
     )

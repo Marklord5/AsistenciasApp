@@ -12,7 +12,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,15 +23,37 @@ import androidx.compose.ui.unit.sp
 import com.kmp.asistencias.Components.LogoutCard
 import com.kmp.asistencias.Components.StatCard
 import com.kmp.asistencias.Components.RecentHistorySection
+import com.kmp.asistencias.Components.LoadingOverlay
+import com.kmp.asistencias.Models.PerfilUsuarioResponse
+import com.kmp.asistencias.Services.Perfil as PerfilService
+import com.russhwolf.settings.Settings
 
 @Composable
 fun Perfil(onLogout: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF2F2F7)) // Fondo gris claro estilo iOS
-            .verticalScroll(rememberScrollState())
-    ) {
+    val settings = remember { Settings() }
+    var perfilData by remember { mutableStateOf<PerfilUsuarioResponse?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        try {
+            perfilData = PerfilService.getPerfil()
+        } catch (e: Exception) {
+            println("Error fetching perfil: ${e.message}")
+        } finally {
+            isLoading = false
+        }
+    }
+
+    val profile = perfilData?.data?.perfil?.firstOrNull()
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF2F2F7)) // Fondo gris claro estilo iOS
+                .verticalScroll(rememberScrollState())
+        ) {
+            // ... resto del contenido ...
         // Encabezado del Perfil
         Column(
             modifier = Modifier
@@ -55,13 +77,13 @@ fun Perfil(onLogout: () -> Unit) {
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Anthony Cast",
+                text = profile?.nombreCompleto ?: if (isLoading) "Cargando..." else "Invitado",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
             Text(
-                text = "Desarrollador Mobile",
+                text = profile?.cargo ?: if (isLoading) "Cargando..." else "",
                 fontSize = 16.sp,
                 color = Color(0xFF8E8E93)
             )
@@ -77,15 +99,15 @@ fun Perfil(onLogout: () -> Unit) {
             StatCard(
                 icon = Icons.Default.Star,
                 label = "Puntualidad",
-                value = "98",
+                value = perfilData?.data?.porcentajePuntualidad?.toString() ?: "0",
                 unit = "%",
                 modifier = Modifier.weight(1f)
             )
             StatCard(
                 icon = Icons.Default.AssignmentInd,
-                label = "Asistencias",
-                value = "22",
-                unit = "días",
+                label = "Horas Hoy",
+                value = perfilData?.data?.horasHoy?.take(4) ?: "0",
+                unit = "hrs",
                 modifier = Modifier.weight(1f)
             )
         }
@@ -94,6 +116,7 @@ fun Perfil(onLogout: () -> Unit) {
 
         // Sección de Historial Reciente
         RecentHistorySection(
+            registros = perfilData?.data?.ultimosRegistros ?: emptyList(),
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -103,12 +126,16 @@ fun Perfil(onLogout: () -> Unit) {
         LogoutCard(
             onClick = {
                 onLogout()
+                settings.remove("token")
+                settings.remove("tokenRefresh")
             },
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 32.dp)
         )
         Spacer(modifier = Modifier.height(120.dp))
+    }
 
+    LoadingOverlay(isLoading = isLoading)
     }
 }
