@@ -16,9 +16,12 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @Composable
-fun LoadingOverlay(isLoading: Boolean) {
-
-    val delayMillis = 1000L // Tiempo fijo del loader
+fun LoadingOverlay(
+    isLoading: Boolean,
+    fileName: String = "Loader_cat.json",
+    delayMillis: Long = 1000L,
+    onFinished: () -> Unit = {}
+) {
 
     var showLoader by remember { mutableStateOf(false) }
 
@@ -28,6 +31,7 @@ fun LoadingOverlay(isLoading: Boolean) {
         } else {
             delay(delayMillis)
             showLoader = false
+            onFinished()
         }
     }
 
@@ -39,8 +43,8 @@ fun LoadingOverlay(isLoading: Boolean) {
             contentAlignment = Alignment.Center
         ) {
             LottieLoader(
-                fileName = "Loader_cat.json",
-                modifier = Modifier.size(200.dp)
+                fileName = fileName,
+                modifier = Modifier.size(300.dp)
             )
         }
     }

@@ -5,91 +5,105 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.kmp.asistencias.Components.AttendanceHistoryCard
 import com.kmp.asistencias.Components.HistorySectionHeader
+import com.kmp.asistencias.Components.LoadingOverlay
+import com.kmp.asistencias.Models.HistorialData
 
 @Composable
 fun Historial() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
-    ) {
-            // SECCIÓN HOY
-            HistorySectionHeader(title = "Hoy", subtitle = "12 Oct")
-            AttendanceHistoryCard(
-                startTime = "09:00 AM",
-                endTime = "--:--",
-                location = "Oficina Madrid Central",
-                locationIcon = Icons.Default.LocationOn,
-                status = "En curso",
-                statusColor = Color(0xFFF6E711),
-                mainIcon = Icons.Default.Timer,
-                mainIconColor = Color.Black,
-                mainIconBgColor = Color(0xFFFFF9C4),
-                showLeftStripe = true,
-                stripeColor = Color(0xFFF6E711)
-            )
+    var historialData by remember { mutableStateOf<HistorialData?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+    var isContentVisible by remember { mutableStateOf(false) }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // SECCIÓN AYER
-            HistorySectionHeader(title = "Ayer", subtitle = "11 Oct")
-            AttendanceHistoryCard(
-                startTime = "08:55 AM",
-                endTime = "06:10 PM",
-                location = "Trabajo Remoto",
-                locationIcon = Icons.Default.Home,
-                status = "Completado",
-                statusColor = Color(0xFFF1F1F1),
-                statusTextColor = Color(0xFF8E8E93),
-                mainIcon = Icons.Default.CheckCircle,
-                mainIconColor = Color(0xFF4CAF50),
-                mainIconBgColor = Color.White,
-                extraBadgeText = "9h 15m"
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // SECCIÓN 10 DE OCTUBRE
-            HistorySectionHeader(title = "10 de Octubre", subtitle = "Jueves")
-            AttendanceHistoryCard(
-                startTime = "09:10 AM",
-                endTime = "05:00 PM",
-                location = "Cliente - Sede Norte",
-                locationIcon = Icons.Default.Business,
-                status = "Completado",
-                statusColor = Color(0xFFF1F1F1),
-                statusTextColor = Color(0xFF8E8E93),
-                mainIcon = Icons.Default.CheckCircle,
-                mainIconColor = Color(0xFF4CAF50),
-                mainIconBgColor = Color.White,
-                extraBadgeText = "7h 50m"
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            AttendanceHistoryCard(
-                startTime = "10:30 AM",
-                endTime = "07:00 PM",
-                location = "Oficina Madrid Central",
-                locationIcon = Icons.Default.LocationOn,
-                status = "Completado",
-                statusColor = Color(0xFFF1F1F1),
-                statusTextColor = Color(0xFF8E8E93),
-                mainIcon = Icons.Default.Warning,
-                mainIconColor = Color.Red,
-                mainIconBgColor = Color(0xFFFFEBEE),
-                extraBadgeText = "Llegada tarde",
-                extraBadgeColor = Color(0xFFFFEBEE),
-                extraBadgeTextColor = Color.Red
-            )
-            
-            Spacer(modifier = Modifier.height(32.dp))
+    LaunchedEffect(Unit) {
+        try {
+            val response = com.kmp.asistencias.Network.Historial.Historial()
+            historialData = response.data
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            isLoading = false
         }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (isContentVisible) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp)
+            ) {
+                historialData?.detallePorDia?.forEach { detalle ->
+                    // Recortar fecha de forma simple (YYYY-MM-DD)
+                    val datePart = detalle.fecha.split("T").getOrNull(0) ?: ""
+                    val parts = datePart.split("-")
+                    val day = parts.getOrNull(2) ?: ""
+                    val monthIdx = parts.getOrNull(1)?.toIntOrNull() ?: 0
+                    
+                    val monthNames = listOf("", "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic")
+                    val monthFull = listOf("", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
+                    
+                    val monthName = monthNames.getOrNull(monthIdx) ?: ""
+                    val monthFullName = monthFull.getOrNull(monthIdx) ?: ""
+                    
+                    val title = "$day de $monthFullName"
+                    val subtitle = "$day $monthName"
+
+                    HistorySectionHeader(title = title, subtitle = subtitle)
+                    
+                    val startTime = formatISOToTime(detalle.horaEntrada)
+                    val endTime = formatISOToTime(detalle.horaSalida)
+                    val isCompletado = detalle.horaSalida != null && detalle.horaSalida.isNotEmpty()
+                    
+                    AttendanceHistoryCard(
+                        startTime = startTime,
+                        endTime = endTime,
+                        location = "Ubicación registrada",
+                        locationIcon = Icons.Default.LocationOn,
+                        status = if (isCompletado) "Completado" else "En curso",
+                        statusColor = if (isCompletado) Color(0xFFF1F1F1) else Color(0xFFF6E711),
+                        statusTextColor = if (isCompletado) Color(0xFF8E8E93) else Color.Black,
+                        mainIcon = if (isCompletado) Icons.Default.CheckCircle else Icons.Default.Timer,
+                        mainIconColor = if (isCompletado) Color(0xFF4CAF50) else Color.Black,
+                        mainIconBgColor = if (isCompletado) Color.White else Color(0xFFFFF9C4),
+                        extraBadgeText = if (detalle.horasTrabajadas > 0) "${detalle.horasTrabajadas}h" else null,
+                        showLeftStripe = !isCompletado,
+                        stripeColor = Color(0xFFF6E711)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
+
+        LoadingOverlay(
+            isLoading = isLoading,
+            fileName = "Loader_Paperplane.json",
+            onFinished = { isContentVisible = true }
+        )
+    }
+}
+
+fun formatISOToTime(isoString: String?): String {
+    if (isoString == null || isoString.isEmpty() || !isoString.contains("T")) return "--:--"
+    return try {
+        val timePart = isoString.split("T")[1]
+        val components = timePart.split(":")
+        val hour = components[0].toInt()
+        val minute = components[1]
+        
+        val ampm = if (hour >= 12) "PM" else "AM"
+        val displayHour = if (hour % 12 == 0) 12 else hour % 12
+        "$displayHour:$minute $ampm"
+    } catch (e: Exception) {
+        "--:--"
+    }
 }

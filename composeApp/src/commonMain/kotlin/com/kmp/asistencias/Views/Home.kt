@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
@@ -32,6 +33,7 @@ import com.kmp.asistencias.Themes.GrayBlue
 import com.kmp.asistencias.Utils.obtenerFechaActual
 import com.kmp.asistencias.Utils.obtenerHoraActual
 import com.kmp.asistencias.Models.RequestEntradaSalida
+import com.kmp.asistencias.Models.ActividadUsuario
 import com.kmp.asistencias.Network.Home as HomeApi
 import com.kmp.asistencias.Services.Perfil as PerfilService
 import com.russhwolf.settings.Settings
@@ -50,19 +52,27 @@ fun Home(onNavigateToHistory: () -> Unit) {
     var userName by remember { mutableStateOf("...") }
     var fotoUrl by remember { mutableStateOf<String?>(null) }
     var showSuccess by remember { mutableStateOf(false) }
+    var actividades by remember { mutableStateOf<List<ActividadUsuario>>(emptyList()) }
 
-    LaunchedEffect(Unit) {
+    fun cargarDatos() {
         scope.launch {
             try {
                 val perfilResponse = PerfilService.getPerfil()
                 userName = perfilResponse.data.perfil.firstOrNull()?.nombreCompleto ?: "Usuario"
-                
+
                 val fotoResponse = PerfilService.ObtenerFoto()
                 fotoUrl = fotoResponse.data
+
+                val actividadResponse = HomeApi.ActividadUsuario()
+                actividades = actividadResponse.data
             } catch (e: Exception) {
-                println("Error fetching profile in Home: ${e.message}")
+                println("Error fetching data in Home: ${e.message}")
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        cargarDatos()
         while (true) {
             fecha = obtenerFechaActual()
             hora = obtenerHoraActual()
@@ -226,7 +236,9 @@ fun Home(onNavigateToHistory: () -> Unit) {
                                 estaEnTurno = !estaEnTurno
                                 showSuccess = true
                                 println("Registro exitoso: ${response.message}")
-                                settings.putBoolean("statusTurno", !settings.getBoolean("statusTurno", false))                            } else {
+                                settings.putBoolean("statusTurno", !settings.getBoolean("statusTurno", false))
+                                cargarDatos()
+                            } else {
 
                                 println("Error en registro: ${response.message}")
                             }
@@ -270,12 +282,26 @@ fun Home(onNavigateToHistory: () -> Unit) {
                 }
             }
 
-            HomeActivityCard(
-                title = "Salida registrada",
-                subtitle = "Ayer",
-                time = "18:02",
-                icon = Icons.AutoMirrored.Filled.Logout
-            )
+            if (actividades.isEmpty()) {
+                Text(
+                    text = "No hay actividad reciente",
+                    color = Color.Gray,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+            } else {
+                actividades.take(3).forEach { actividad ->
+                    val isEntrada = actividad.tipo.contains("ENTRADA", ignoreCase = true)
+                    HomeActivityCard(
+                        title = if (isEntrada) "Entrada registrada" else "Salida registrada",
+                        subtitle = actividad.etiquetaFecha.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
+                        time = actividad.hora24h,
+                        icon = if (isEntrada) Icons.AutoMirrored.Filled.Login else Icons.AutoMirrored.Filled.Logout,
+                        iconColor = if (isEntrada) Color(0xFF4CAF50) else Color(0xFFF57C00),
+                        iconBackgroundColor = if (isEntrada) Color(0xFFE8F5E9) else Color(0xFFFFF3E0)
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
 
 
             Spacer(modifier = Modifier.height(120.dp))

@@ -40,7 +40,7 @@ object Perfil {
 
         val token = settings.getString("token", "")
 
-        return client.get("https://asistenciasapi.jorchav.com.mx/api/Asistencia/GetFotoUsuario") {
+        return client.get("https://qa-asistenciasapi.jorchav.com.mx/api/Asistencia/GetFotoUsuario") {
             header("Authorization", "Bearer $token")
             accept(ContentType.Application.Json)
         }.body()

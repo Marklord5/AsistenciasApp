@@ -4,6 +4,7 @@ import com.kmp.asistencias.Models.EncryptedRequest
 import com.kmp.asistencias.Models.LoginRequest
 import com.kmp.asistencias.Models.PerfilUsuarioResponse
 import com.kmp.asistencias.Models.RequestEntradaSalida
+import com.kmp.asistencias.Models.ResponseActividaUsuario
 import com.kmp.asistencias.Models.ResponseEntradaSalida
 import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
@@ -23,6 +24,7 @@ import com.kmp.asistencias.Network.Crypto
 
 object Home {
     private val settings = Settings()
+    val token = settings.getString("token", "")
 
     private val client = HttpClient {
         install(ContentNegotiation) {
@@ -36,16 +38,12 @@ object Home {
     suspend fun RegistarEntrada(requestEntradaSalida: RequestEntradaSalida, Tipo: Boolean): ResponseEntradaSalida {
         val jsonString = Json.encodeToString(requestEntradaSalida)
         val encryptedData = Crypto.encrypt(jsonString)
-        val token = settings.getString("token", "")
 
         val endpoint: String = if (Tipo) {
             "https://qa-asistenciasapi.jorchav.com.mx/api/Asistencia/Registro_Salida"
 
-
         } else {
-
             "https://qa-asistenciasapi.jorchav.com.mx/api/Asistencia/Registro_Entrada"
-
         }
 
         return client.post(endpoint) {
@@ -57,20 +55,15 @@ object Home {
     }
 
 
-
+    suspend fun ActividadUsuario(): ResponseActividaUsuario {
+        return client.get("https://qa-asistenciasapi.jorchav.com.mx/api/Asistencia/GetActividadUsuario") {
+            header("Authorization", "Bearer $token")
+            contentType(ContentType.Application.Json)
+        }.body()
+    }
 
 
 }
 
 
 
-
-/*
-{
-    "IdUsuario": 1,
-    "Latitud": 19.432608,
-    "Longitud": -99.133209,
-    "UbicacionDetalle": "Sucursal Reforma",
-    "Fuente": "APP_MOVIL"
-}
-*/

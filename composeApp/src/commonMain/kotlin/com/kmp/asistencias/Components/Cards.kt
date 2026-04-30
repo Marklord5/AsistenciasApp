@@ -33,7 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kmp.asistencias.Models.PerfilUsuarioResponse
 
 /**
  * Componente para mostrar estadísticas como "Horas Hoy" o "Puntualidad".
@@ -102,6 +101,8 @@ fun HomeActivityCard(
     subtitle: String,
     time: String,
     icon: ImageVector,
+    iconColor: Color = Color(0xFF8E8E93),
+    iconBackgroundColor: Color = Color(0xFFF1F1F1),
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -119,13 +120,13 @@ fun HomeActivityCard(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFF1F1F1)),
+                    .background(iconBackgroundColor),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = Color(0xFF8E8E93),
+                    tint = iconColor,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -275,8 +276,8 @@ fun HistoryItem(
  */
 @Composable
 fun RecentHistorySection(
-    registros: List<PerfilUsuarioResponse.UltimoRegistro> = emptyList(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
 ) {
     Column(
         modifier = modifier
@@ -296,47 +297,16 @@ fun RecentHistorySection(
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-            /*Text(
+            Text(
                 text = "Ver todo",
                 fontSize = 14.sp,
                 color = Color.Gray
-            )*/
+            )
         }
         
         Spacer(modifier = Modifier.height(24.dp))
 
-        if (registros.isEmpty()) {
-            Text(
-                text = "No hay registros recientes",
-                color = Color.Gray,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
-        } else {
-            registros.forEachIndexed { index, registro ->
-                // Simple parsing for display
-                val isEntry = registro.tipo.contains("Entrada", ignoreCase = true)
-                val displayTime = try {
-                    registro.fechaHora.split("T").last().substring(0, 5)
-                } catch (e: Exception) {
-                    registro.fechaHora
-                }
-                
-                val displayDate = try {
-                    registro.fechaHora.split("T").first()
-                } catch (e: Exception) {
-                    ""
-                }
-
-                HistoryItem(
-                    isEntry = isEntry,
-                    title = "${registro.tipo} - $displayDate",
-                    time = displayTime,
-                    location = "Ubicación registrada", // El modelo no trae ubicación por ahora
-                    isLast = index == registros.size - 1
-                )
-            }
-        }
+        content()
     }
 }
 

@@ -1,5 +1,6 @@
 package com.kmp.asistencias.Models
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
@@ -26,17 +27,30 @@ data class EncryptedRequest(
     val en: String
 )
 
-/*
-entrada
 
 
-"{\"IdUsuario\":1,\"Latitud\":19.432608,\"Longitud\":-99.133209,\"UbicacionDetalle\":\"Sucursal Reforma\",\"Fuente\":\"APP_MOVIL\"}"
 
-salida
+@Serializable
+data class ResponseActividaUsuario(
+    val status: String,
+    val message: String,
+    val data: List<ActividadUsuario>,
+    val traceId: String
 
+)
+@Serializable
+data class ActividadUsuario(
+    @SerialName("fechA_CREACION")
+    val fechaCreacion: String,
 
-"{\"IdUsuario\":1,\"Latitud\":19.432608,\"Longitud\":-99.133209,\"UbicacionDetalle\":\"Sucursal Reforma\",\"Fuente\":\"APP_MOVIL\"}"
+    @SerialName("nombrE_DIA")
+    val nombreDia: String,
 
+    @SerialName("horA_24H")
+    val hora24h: String,
 
- */
+    @SerialName("etiquetA_FECHA")
+    val etiquetaFecha: String,
 
+    val tipo: String
+)
