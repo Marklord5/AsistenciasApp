@@ -43,3 +43,18 @@ data class FotoPerfil(
     val traceId: String
 
 )
+
+
+
+@Serializable
+data class RequestFoto(
+    val idUsuario: Int,
+    val documento: Documento
+)
+
+@Serializable
+data class Documento(
+    val idTipoDocumento: Int,
+    val base64: String,
+    val extension: String
+)

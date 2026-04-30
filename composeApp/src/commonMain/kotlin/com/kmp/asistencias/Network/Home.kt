@@ -40,10 +40,9 @@ object Home {
         val encryptedData = Crypto.encrypt(jsonString)
 
         val endpoint: String = if (Tipo) {
-            "https://qa-asistenciasapi.jorchav.com.mx/api/Asistencia/Registro_Salida"
-
+            ApiConfig.REGISTRO_SALIDA
         } else {
-            "https://qa-asistenciasapi.jorchav.com.mx/api/Asistencia/Registro_Entrada"
+            ApiConfig.REGISTRO_ENTRADA
         }
 
         return client.post(endpoint) {
@@ -56,7 +55,7 @@ object Home {
 
 
     suspend fun ActividadUsuario(): ResponseActividaUsuario {
-        return client.get("https://qa-asistenciasapi.jorchav.com.mx/api/Asistencia/GetActividadUsuario") {
+        return client.get(ApiConfig.GET_ACTIVIDAD) {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
         }.body()

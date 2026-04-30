@@ -70,6 +70,10 @@ kotlin {
             // Coil
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
+
+            // Image Picker
+            implementation(libs.peekaboo.image.picker)
+            implementation(libs.peekaboo.ui)
         }
         val iosArm64Main by getting {
             dependencies {
@@ -101,6 +105,9 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+        jniLibs {
+            useLegacyPackaging = false
         }
     }
     buildTypes {

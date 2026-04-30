@@ -1,15 +1,17 @@
 package com.kmp.asistencias.Views
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AssignmentInd
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -28,23 +30,65 @@ import com.kmp.asistencias.Components.RecentHistorySection
 import com.kmp.asistencias.Components.HistoryItem
 import com.kmp.asistencias.Components.LoadingOverlay
 import com.kmp.asistencias.Models.PerfilUsuarioResponse
+import com.kmp.asistencias.Models.RequestFoto
+import com.kmp.asistencias.Models.Documento
 import com.kmp.asistencias.Services.Perfil as PerfilService
 import com.russhwolf.settings.Settings
+import com.preat.peekaboo.image.picker.SelectionMode
+import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
+import io.ktor.util.encodeBase64
+import kotlinx.coroutines.launch
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 @Composable
 fun Perfil(onLogout: () -> Unit) {
     val settings = remember { Settings() }
+    val scope = rememberCoroutineScope()
     var perfilData by remember { mutableStateOf<PerfilUsuarioResponse?>(null) }
     var fotoUrl by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var isContentVisible by remember { mutableStateOf(false) }
+
+    @OptIn(ExperimentalEncodingApi::class)
+    val singleImagePicker = rememberImagePickerLauncher(
+        selectionMode = SelectionMode.Single,
+        scope = scope,
+        onResult = { byteArrays ->
+            byteArrays.firstOrNull()?.let { byteArray ->
+                scope.launch {
+                    try {
+                        isLoading = true
+                        val base64Image = Base64.Default.encode(byteArray)
+                        val request = RequestFoto(
+                            idUsuario = 1, // TODO: Obtener el ID real
+                            documento = Documento(
+                                idTipoDocumento = 10,
+                                base64 = base64Image,
+                                extension = "jpg"
+                            )
+                        )
+                        val response = PerfilService.CambiarFoto(request)
+                        if (response.success) {
+                            val fotoResponse = PerfilService.ObtenerFoto()
+                            fotoUrl = fotoResponse.data
+                        }
+                    } catch (e: Exception) {
+                        println("Error al cambiar foto: ${e.message}")
+                    } finally {
+                        isLoading = false
+                    }
+                }
+            }
+        }
+    )
 
     LaunchedEffect(Unit) {
         try {
             perfilData = PerfilService.getPerfil()
             val fotoResponse = PerfilService.ObtenerFoto()
             fotoUrl = fotoResponse.data // Asumimos que la URL viene en 'message'
-            println("Error fetching perfil: ${fotoUrl}")
+            println("Error fetching perfil: $fotoUrl")
 
         } catch (e: Exception) {
             println("Error fetching perfil: ${e.message}")
@@ -73,23 +117,48 @@ fun Perfil(onLogout: () -> Unit) {
                     Box(
                         modifier = Modifier
                             .size(100.dp)
-                            .clip(CircleShape)
-                            .background(Color.White),
-                        contentAlignment = Alignment.Center
                     ) {
-                        if (fotoUrl != null) {
-                            AsyncImage(
-                                model = fotoUrl,
-                                contentDescription = "Foto de perfil",
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
-                        } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(CircleShape)
+                                .background(Color.White)
+                                .clickable { singleImagePicker.launch() },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (fotoUrl != null) {
+                                AsyncImage(
+                                    model = fotoUrl,
+                                    contentDescription = "Foto de perfil",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(60.dp),
+                                    tint = Color(0xFF8E8E93)
+                                )
+                            }
+                        }
+
+                        // Icono de edición (Cámara)
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .size(32.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFF007AFF))
+                                .clickable { singleImagePicker.launch() }
+                                .padding(6.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
                             Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
-                                modifier = Modifier.size(60.dp),
-                                tint = Color(0xFF8E8E93)
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Cambiar foto",
+                                tint = Color.White,
+                                modifier = Modifier.size(18.dp)
                             )
                         }
                     }

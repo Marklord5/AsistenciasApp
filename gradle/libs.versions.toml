@@ -21,6 +21,7 @@ kotlinx-coroutines = "1.10.2"
 androidx-navigation = "2.9.2"
 compottie = "2.1.0"
 coil = "3.4.0"
+peekaboo = "0.5.2"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -59,6 +60,8 @@ compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "comp
 compottie-resources = { module = "io.github.alexzhirkevich:compottie-resources", version.ref = "compottie" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+peekaboo-image-picker = { module = "io.github.onseok:peekaboo-image-picker", version.ref = "peekaboo" }
+peekaboo-ui = { module = "io.github.onseok:peekaboo-ui", version.ref = "peekaboo" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

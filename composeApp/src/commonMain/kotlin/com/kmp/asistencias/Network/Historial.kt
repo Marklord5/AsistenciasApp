@@ -28,7 +28,7 @@ object Historial {
     }
 
     suspend fun Historial(): HistorialResponse {
-        return client.get("https://qa-asistenciasapi.jorchav.com.mx/api/Asistencia/GetHistorialUsuario") {
+        return client.get(ApiConfig.GET_HISTORIAL) {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
         }.body()

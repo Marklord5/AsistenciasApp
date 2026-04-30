@@ -21,7 +21,7 @@ object LoginApi {
     }
 
     suspend fun login(email: String, pass: String): LoginResponse = 
-        client.post("https://qa-asistenciasapi.jorchav.com.mx/api/Home/loginMovilMa") {
+        client.post(ApiConfig.LOGIN) {
             contentType(ContentType.Application.Json)
             setBody(LoginRequest(email, pass))
         }.body()
