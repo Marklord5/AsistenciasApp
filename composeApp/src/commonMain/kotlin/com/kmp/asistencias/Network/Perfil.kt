@@ -1,5 +1,6 @@
 package com.kmp.asistencias.Services
 
+import com.kmp.asistencias.Models.FotoPerfil
 import com.kmp.asistencias.Models.PerfilUsuarioResponse
 import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
@@ -30,6 +31,16 @@ object Perfil {
         val token = settings.getString("token", "")
 
         return client.get("https://qa-asistenciasapi.jorchav.com.mx/api/Asistencia/GetPerfilUsuario") {
+            header("Authorization", "Bearer $token")
+            accept(ContentType.Application.Json)
+        }.body()
+    }
+
+    suspend fun ObtenerFoto(): FotoPerfil {
+
+        val token = settings.getString("token", "")
+
+        return client.get("https://asistenciasapi.jorchav.com.mx/api/Asistencia/GetFotoUsuario") {
             header("Authorization", "Bearer $token")
             accept(ContentType.Application.Json)
         }.body()

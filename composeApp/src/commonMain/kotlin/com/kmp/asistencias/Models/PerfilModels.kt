@@ -33,3 +33,13 @@ data class PerfilUsuarioResponse(
         val fechaHora: String
     )
 }
+
+
+@Serializable
+data class FotoPerfil(
+    val status: String,
+    val message: String,
+    val data: String,
+    val traceId: String
+
+)

@@ -17,9 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.kmp.asistencias.Components.LogoutCard
 import com.kmp.asistencias.Components.StatCard
 import com.kmp.asistencias.Components.RecentHistorySection
@@ -32,11 +34,16 @@ import com.russhwolf.settings.Settings
 fun Perfil(onLogout: () -> Unit) {
     val settings = remember { Settings() }
     var perfilData by remember { mutableStateOf<PerfilUsuarioResponse?>(null) }
+    var fotoUrl by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         try {
             perfilData = PerfilService.getPerfil()
+            val fotoResponse = PerfilService.ObtenerFoto()
+            fotoUrl = fotoResponse.data // Asumimos que la URL viene en 'message'
+            println("Error fetching perfil: ${fotoUrl}")
+
         } catch (e: Exception) {
             println("Error fetching perfil: ${e.message}")
         } finally {
@@ -68,12 +75,21 @@ fun Perfil(onLogout: () -> Unit) {
                     .background(Color.White),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    modifier = Modifier.size(60.dp),
-                    tint = Color(0xFF8E8E93)
-                )
+                if (fotoUrl != null) {
+                    AsyncImage(
+                        model = fotoUrl,
+                        contentDescription = "Foto de perfil",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        modifier = Modifier.size(60.dp),
+                        tint = Color(0xFF8E8E93)
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
