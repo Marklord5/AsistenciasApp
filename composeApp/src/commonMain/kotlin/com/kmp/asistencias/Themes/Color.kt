@@ -9,10 +9,10 @@ val BlueDeep = Color(0xFF5A57FF)  // Azul profundo / Violeta
 val BlueCyan = Color(0xFF35C2FB)  // Cyan para los reflejos más claros
 
 // Colores de fondo y acento
-val BackgroundWhite = Color(0xFFF8FAFF)
+val BackgroundWhite = Color(0xFFF0EFF5)
 val White = Color(0xFFFFFFFF)
 val GrayLight = Color(0xFFE1E8F0)
-val GrayBlue = Color(0xFFF2F6FF)
+val GrayBlue = Color(0xFFC0C0C4)
 
 // Dark Mode Colors
 val BackgroundDark = Color(0xFF000000)
