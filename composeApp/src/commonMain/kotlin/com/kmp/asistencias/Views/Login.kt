@@ -50,7 +50,7 @@ fun Login(onLoginSuccess: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundWhite)
+            .background(MaterialTheme.colorScheme.background)
             .statusBarsPadding()
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
@@ -79,7 +79,7 @@ fun Login(onLoginSuccess: () -> Unit) {
                     modifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(10.dp))
-                        .background(White),
+                        .background(Color.White),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -92,7 +92,7 @@ fun Login(onLoginSuccess: () -> Unit) {
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = "Asistencias",
-                    color = White,
+                    color = Color.White,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -106,14 +106,14 @@ fun Login(onLoginSuccess: () -> Unit) {
                 text = "Bienvenido de nuevo",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 letterSpacing = (-0.5).sp
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "Ingresa tus credenciales para registrar tu jornada.",
                 fontSize = 16.sp,
-                color = Color(0xFF8E8E93),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 22.sp
             )
         }
@@ -162,6 +162,7 @@ fun Login(onLoginSuccess: () -> Unit) {
                     text = "Recordar",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(start = 4.dp)
                 )
             }
@@ -169,7 +170,7 @@ fun Login(onLoginSuccess: () -> Unit) {
                 text = "¿Olvidaste tu contraseña?",
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.clickable { /* TODO */ }
             )
         }
@@ -226,10 +227,10 @@ fun Login(onLoginSuccess: () -> Unit) {
 
         Text(
             text = buildAnnotatedString {
-                withStyle(style = SpanStyle(color = Color(0xFF8E8E93))) {
+                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
                     append("¿No tienes cuenta? ")
                 }
-                withStyle(style = SpanStyle(color = Color.Black, fontWeight = FontWeight.Bold)) {
+                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)) {
                     append("Regístrate aquí")
                 }
             },
@@ -242,7 +243,7 @@ fun Login(onLoginSuccess: () -> Unit) {
         Text(
             text = "TSDN v1.0.0 © 2026",
             fontSize = 13.sp,
-            color = Color(0xFFC7C7CC),
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             modifier = Modifier.padding(bottom = 16.dp)
         )
     }

@@ -86,7 +86,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(BackgroundWhite)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState)
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -107,7 +107,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
                             modifier = Modifier
                                 .size(56.dp)
                                 .clip(CircleShape)
-                                .background(Color.White),
+                                .background(MaterialTheme.colorScheme.surface),
                             contentAlignment = Alignment.Center
                         ) {
                             if (fotoUrl != null) {
@@ -122,7 +122,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
                                     Icons.Default.Person,
                                     contentDescription = null,
                                     modifier = Modifier.size(32.dp),
-                                    tint = Color.Gray
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -138,8 +138,8 @@ fun Home(onNavigateToHistory: () -> Unit) {
                     Spacer(modifier = Modifier.width(12.dp))
 
                     Column {
-                        Text("Bienvenido,", color = Color.Gray, fontSize = 16.sp)
-                        Text(userName, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                        Text("Bienvenido,", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp)
+                        Text(userName, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurface)
                     }
                 }
 
@@ -147,12 +147,13 @@ fun Home(onNavigateToHistory: () -> Unit) {
                     modifier = Modifier
                         .size(48.dp)
                         .clip(CircleShape)
-                        .background(GrayBlue),
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         Icons.Default.Notifications,
-                        contentDescription = "Notificaciones"
+                        contentDescription = "Notificaciones",
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -163,7 +164,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = fecha,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
                     letterSpacing = 1.sp
@@ -173,7 +174,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
                     text = hora,
                     fontSize = 72.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF1A1C1E)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -268,7 +269,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
                     text = "ACTIVIDAD RECIENTE",
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 14.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 TextButton(
@@ -276,7 +277,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
                 ) {
                     Text(
                         text = "Ver historial",
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )
                 }

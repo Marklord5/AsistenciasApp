@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,7 +58,7 @@ fun NavBar(
                 .wrapContentWidth()
                 .height(72.dp),
             shape = CircleShape,
-            color = White,
+            color = MaterialTheme.colorScheme.surface,
             shadowElevation = 12.dp
         ) {
             Row(
@@ -87,7 +88,7 @@ fun NavBar(
                             Icon(
                                 imageVector = item.icon,
                                 contentDescription = item.title,
-                                tint = if (isSelected) White else Color.Gray,
+                                tint = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(24.dp)
                             )
                             
@@ -96,7 +97,7 @@ fun NavBar(
                                 Text(
                                     text = item.title,
                                     fontSize = 14.sp,
-                                    color = White,
+                                    color = Color.White,
                                     fontWeight = FontWeight.Bold,
                                     maxLines = 1
                                 )

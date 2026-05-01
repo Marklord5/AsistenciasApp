@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -48,7 +49,7 @@ fun StatCard(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(32.dp))
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(24.dp)
     ) {
         Column {
@@ -59,12 +60,12 @@ fun StatCard(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = Color(0xFF8E8E93),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp)
                 )
                 Text(
                     text = label,
-                    color = Color(0xFF8E8E93),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -75,14 +76,14 @@ fun StatCard(
                     withStyle(style = SpanStyle(
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onSurface
                     )) {
                         append(value)
                     }
                     withStyle(style = SpanStyle(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF8E8E93)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )) {
                         append(unit)
                     }
@@ -101,15 +102,15 @@ fun HomeActivityCard(
     subtitle: String,
     time: String,
     icon: ImageVector,
-    iconColor: Color = Color(0xFF8E8E93),
-    iconBackgroundColor: Color = Color(0xFFF1F1F1),
+    iconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    iconBackgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(32.dp))
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp)
     ) {
         Row(
@@ -138,12 +139,12 @@ fun HomeActivityCard(
                     text = title,
                     fontWeight = FontWeight.Bold,
                     fontSize = 17.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = subtitle,
                     fontSize = 14.sp,
-                    color = Color(0xFF8E8E93)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             
@@ -151,7 +152,7 @@ fun HomeActivityCard(
                 text = time,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color(0xFF8E8E93)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -201,7 +202,7 @@ fun HistoryItem(
                     modifier = Modifier
                         .width(1.dp)
                         .height(40.dp)
-                        .background(Color(0xFFEEEEEE))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                 )
             }
         }
@@ -216,7 +217,7 @@ fun HistoryItem(
                 text = title,
                 fontWeight = FontWeight.Bold,
                 fontSize = 17.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(6.dp))
             Row(
@@ -231,12 +232,12 @@ fun HistoryItem(
                     Icon(
                         imageVector = Icons.Default.Schedule,
                         contentDescription = null,
-                        tint = Color(0xFF8E8E93),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(14.dp)
                     )
                     Text(
                         text = time,
-                        color = Color(0xFF8E8E93),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 13.sp
                     )
                 }
@@ -244,7 +245,7 @@ fun HistoryItem(
                 // Separador punto
                 Text(
                     text = "•",
-                    color = Color(0xFF8E8E93),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp
                 )
 
@@ -257,12 +258,12 @@ fun HistoryItem(
                         imageVector = if (location.lowercase() == "remoto") 
                             Icons.Default.Schedule else Icons.Default.LocationOn, // Placeholder for home icon
                         contentDescription = null,
-                        tint = Color(0xFF8E8E93),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(14.dp)
                     )
                     Text(
                         text = location,
-                        color = Color(0xFF8E8E93),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 13.sp
                     )
                 }
@@ -283,7 +284,7 @@ fun RecentHistorySection(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(24.dp)
     ) {
         Row(
@@ -295,12 +296,12 @@ fun RecentHistorySection(
                 text = "Historial Reciente",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = "Ver todo",
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         
@@ -322,7 +323,7 @@ fun LogoutCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .clickable { onClick() }
             .padding(20.dp),
         contentAlignment = Alignment.Center
@@ -369,19 +370,19 @@ fun HistorySectionHeader(
             text = title,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onSurface
         )
         if (subtitle != null) {
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFF1F1F1))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
                     text = subtitle,
                     fontSize = 12.sp,
-                    color = Color(0xFF8E8E93),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -397,13 +398,13 @@ fun AttendanceHistoryCard(
     locationIcon: ImageVector,
     status: String,
     statusColor: Color,
-    statusTextColor: Color = Color.Black,
+    statusTextColor: Color = MaterialTheme.colorScheme.onSurface,
     mainIcon: ImageVector,
     mainIconColor: Color,
     mainIconBgColor: Color,
     extraBadgeText: String? = null,
-    extraBadgeColor: Color = Color(0xFFF1F1F1),
-    extraBadgeTextColor: Color = Color(0xFF8E8E93),
+    extraBadgeColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+    extraBadgeTextColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     showLeftStripe: Boolean = false,
     stripeColor: Color = Color.Transparent,
     modifier: Modifier = Modifier
@@ -413,8 +414,8 @@ fun AttendanceHistoryCard(
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
             .clip(RoundedCornerShape(40.dp))
-            .background(Color.White)
-            .border(1.dp, Color(0xFFEEEEEE), RoundedCornerShape(40.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(40.dp))
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (showLeftStripe) {
@@ -457,13 +458,13 @@ fun AttendanceHistoryCard(
                             text = startTime,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = " - $endTime",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Medium,
-                            color = Color(0xFF8E8E93)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     
@@ -474,13 +475,13 @@ fun AttendanceHistoryCard(
                         Icon(
                             imageVector = locationIcon,
                             contentDescription = null,
-                            tint = Color(0xFF8E8E93),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(14.dp)
                         )
                         Text(
                             text = location,
                             fontSize = 14.sp,
-                            color = Color(0xFF8E8E93)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     
@@ -518,7 +519,7 @@ fun AttendanceHistoryCard(
                                 modifier = Modifier
                                     .size(6.dp)
                                     .clip(CircleShape)
-                                    .background(Color.Black)
+                                    .background(MaterialTheme.colorScheme.onSurface)
                             )
                         }
                         Text(
@@ -552,8 +553,8 @@ fun DocumentCard(
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
             .clip(RoundedCornerShape(40.dp))
-            .background(Color.White)
-            .border(1.dp, Color(0xFFEEEEEE), RoundedCornerShape(40.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(40.dp))
     ) {
         Row(
             modifier = Modifier
@@ -566,13 +567,13 @@ fun DocumentCard(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFF1F1F1)),
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Description,
                     contentDescription = null,
-                    tint = Color(0xFF8E8E93),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -585,13 +586,13 @@ fun DocumentCard(
                     text = name,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1
                 )
                 Text(
                     text = "$date • $size",
                     fontSize = 14.sp,
-                    color = Color(0xFF8E8E93)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -605,14 +606,14 @@ fun DocumentCard(
                     modifier = Modifier
                         .size(36.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFF1F1F1))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .clickable { onViewClick() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Visibility,
                         contentDescription = "Ver",
-                        tint = Color(0xFF8E8E93),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(18.dp)
                     )
                 }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -67,11 +68,11 @@ fun Historial() {
                         location = "Ubicación registrada",
                         locationIcon = Icons.Default.LocationOn,
                         status = if (isCompletado) "Completado" else "En curso",
-                        statusColor = if (isCompletado) Color(0xFFF1F1F1) else Color(0xFFF6E711),
-                        statusTextColor = if (isCompletado) Color(0xFF8E8E93) else Color.Black,
+                        statusColor = if (isCompletado) MaterialTheme.colorScheme.surfaceVariant else Color(0xFFF6E711),
+                        statusTextColor = if (isCompletado) MaterialTheme.colorScheme.onSurfaceVariant else Color.Black,
                         mainIcon = if (isCompletado) Icons.Default.CheckCircle else Icons.Default.Timer,
                         mainIconColor = if (isCompletado) Color(0xFF4CAF50) else Color.Black,
-                        mainIconBgColor = if (isCompletado) Color.White else Color(0xFFFFF9C4),
+                        mainIconBgColor = if (isCompletado) MaterialTheme.colorScheme.surface else Color(0xFFFFF9C4),
                         extraBadgeText = if (detalle.horasTrabajadas > 0) "${detalle.horasTrabajadas}h" else null,
                         showLeftStripe = !isCompletado,
                         stripeColor = Color(0xFFF6E711)

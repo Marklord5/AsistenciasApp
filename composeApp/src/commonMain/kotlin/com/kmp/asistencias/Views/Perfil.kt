@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -112,7 +113,7 @@ fun Perfil(onLogout: () -> Unit) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFF2F2F7)) // Fondo gris claro estilo iOS
+                    .background(MaterialTheme.colorScheme.background) // Fondo dinámico
                     .verticalScroll(rememberScrollState())
             ) {
                 // Encabezado del Perfil
@@ -130,7 +131,7 @@ fun Perfil(onLogout: () -> Unit) {
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(CircleShape)
-                                .background(Color.White)
+                                .background(MaterialTheme.colorScheme.surface)
                                 .clickable { singleImagePicker.launch() },
                             contentAlignment = Alignment.Center
                         ) {
@@ -146,7 +147,7 @@ fun Perfil(onLogout: () -> Unit) {
                                     imageVector = Icons.Default.Person,
                                     contentDescription = null,
                                     modifier = Modifier.size(60.dp),
-                                    tint = Color(0xFF8E8E93)
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -175,12 +176,12 @@ fun Perfil(onLogout: () -> Unit) {
                         text = profile?.nombreCompleto ?: "Invitado",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = profile?.cargo ?: "",
                         fontSize = 16.sp,
-                        color = Color(0xFF8E8E93)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 

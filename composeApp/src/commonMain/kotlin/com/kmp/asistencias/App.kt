@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -20,6 +21,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.kmp.asistencias.Components.NavBar
 import com.kmp.asistencias.Components.TopBar
+import com.kmp.asistencias.Themes.AsistenciasTheme
 import com.kmp.asistencias.Themes.BackgroundWhite
 import com.kmp.asistencias.Views.Documentos
 import com.kmp.asistencias.Views.Historial
@@ -33,28 +35,29 @@ fun App() {
     var selectedItem by remember { mutableStateOf(0) }
     val titles = listOf("Inicio", "Historial", "Reportes", "Perfil")
 
-    if (!isLoggedIn) {
-        Login(onLoginSuccess = { isLoggedIn = true })
-    } else {
-        Scaffold(
-            containerColor = BackgroundWhite,
-            topBar = {
-                TopBar(
-                    title = titles[selectedItem],
-                    onBackClick = if (selectedItem != 0) {
-                        { selectedItem = 0 }
-                    } else null
-                )
-            }
-        ) { paddingValues ->
-            val currentBgColor = if (selectedItem == 4) Color(0xFFF2F2F7) else BackgroundWhite
+    AsistenciasTheme {
+        if (!isLoggedIn) {
+            Login(onLoginSuccess = { isLoggedIn = true })
+        } else {
+            Scaffold(
+                containerColor = MaterialTheme.colorScheme.background,
+                topBar = {
+                    TopBar(
+                        title = titles[selectedItem],
+                        onBackClick = if (selectedItem != 0) {
+                            { selectedItem = 0 }
+                        } else null
+                    )
+                }
+            ) { paddingValues ->
+                val currentBgColor = if (selectedItem == 3) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.surface
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(currentBgColor)
-                    .padding(top = paddingValues.calculateTopPadding())
-            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(currentBgColor)
+                        .padding(top = paddingValues.calculateTopPadding())
+                ) {
                 Column(modifier = Modifier.fillMaxSize()) {
                     Box(modifier = Modifier.weight(1f)) {
                         when (selectedItem) {
@@ -74,4 +77,5 @@ fun App() {
             }
         }
     }
+}
 }
