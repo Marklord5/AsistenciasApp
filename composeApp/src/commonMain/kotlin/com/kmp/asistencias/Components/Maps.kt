@@ -102,15 +102,15 @@ fun AttendanceMap(
         // Tarjeta que muestra las coordenadas del usuario
         Surface(
             modifier = Modifier
-                .padding(20.dp)
+                .padding(10.dp)
                 .align(Alignment.TopStart),
             shape = RoundedCornerShape(24.dp),
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
             shadowElevation = 2.dp
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(Icons.Default.MyLocation, null, Modifier.size(18.dp), Color(0xFF007AFF))
