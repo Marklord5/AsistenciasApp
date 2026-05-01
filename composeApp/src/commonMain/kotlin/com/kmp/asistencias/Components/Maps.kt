@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -83,7 +84,7 @@ fun AttendanceMap(
             .fillMaxWidth()
             .height(300.dp)
             .clip(RoundedCornerShape(40.dp))
-            .background(Color(0xFFE8EDF2))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
         // Muestra el mapa usando las coordenadas actuales
         GoogleMapView(
@@ -100,11 +101,11 @@ fun AttendanceMap(
 
         // Tarjeta que muestra las coordenadas del usuario
         Surface(
-            Modifier
+            modifier = Modifier
                 .padding(20.dp)
                 .align(Alignment.TopStart),
-            RoundedCornerShape(24.dp),
-            Color.White.copy(0.95f),
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
             shadowElevation = 2.dp
         ) {
             Row(
@@ -119,13 +120,14 @@ fun AttendanceMap(
                         "COORDENADAS",
                         fontSize = 10.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     Text(
                         "${userLat.toString().take(8)}, ${userLon.toString().take(8)}",
                         fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -138,7 +140,7 @@ fun AttendanceMap(
                 .align(Alignment.BottomStart)
                 .size(56.dp)
                 .clip(CircleShape)
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
                 .clickable {
                     scope.launch {
                         isFetching = true
@@ -164,7 +166,7 @@ fun AttendanceMap(
                 Icons.Default.MyLocation,
                 null,
                 Modifier.size(24.dp),
-                if (isFetching) Color(0xFF007AFF) else Color.Black
+                if (isFetching) Color(0xFF007AFF) else MaterialTheme.colorScheme.onSurface
             )
         }
     }
