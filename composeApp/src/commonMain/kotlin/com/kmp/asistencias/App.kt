@@ -50,7 +50,8 @@ fun App() {
                     )
                 }
             ) { paddingValues ->
-                val currentBgColor = if (selectedItem == 3) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.surface
+                // Mantenemos el fondo original (background) para que las tarjetas (surface) resalten
+                val currentBgColor = MaterialTheme.colorScheme.background
 
                 Box(
                     modifier = Modifier

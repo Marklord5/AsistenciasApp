@@ -99,7 +99,7 @@ fun Login(onLoginSuccess: () -> Unit) {
             }
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
@@ -109,16 +109,16 @@ fun Login(onLoginSuccess: () -> Unit) {
                 color = MaterialTheme.colorScheme.onSurface,
                 letterSpacing = (-0.5).sp
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Ingresa tus credenciales para registrar tu jornada.",
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                lineHeight = 22.sp
+                lineHeight = 20.sp
             )
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         CustomTextField(
             value = email,
@@ -175,7 +175,7 @@ fun Login(onLoginSuccess: () -> Unit) {
             )
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         if (errorMessage != null) {
             Text(
@@ -223,7 +223,7 @@ fun Login(onLoginSuccess: () -> Unit) {
             }
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Text(
             text = buildAnnotatedString {

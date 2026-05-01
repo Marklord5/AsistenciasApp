@@ -158,7 +158,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Fecha y Hora
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -213,7 +213,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
                 }
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             SlideToActButton(
                 text = if (estaEnTurno) "Desliza para Salida" else "Desliza para Registrarte",
