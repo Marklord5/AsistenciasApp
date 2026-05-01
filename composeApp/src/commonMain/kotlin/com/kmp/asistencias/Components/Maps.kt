@@ -109,8 +109,8 @@ fun AttendanceMap(
             shadowElevation = 2.dp
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 13.dp, vertical = 1.dp),
-                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                modifier = Modifier.padding(horizontal = 13.dp, vertical = 0.dp, ),
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(Icons.Default.MyLocation, null, Modifier.size(18.dp), Color(0xFF007AFF))
@@ -127,8 +127,8 @@ fun AttendanceMap(
                         "${userLat.toString().take(8)}, ${userLon.toString().take(8)}",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(end = 2.dp)                    )
                 }
             }
         }
@@ -136,9 +136,9 @@ fun AttendanceMap(
         // Botón para volver a centrar el mapa en la ubicación actual
         Box(
             Modifier
-                .padding(20.dp)
+                .padding(start = 5.dp, bottom = 30.dp)
                 .align(Alignment.BottomStart)
-                .size(56.dp)
+                .size(40.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surface)
                 .clickable {
