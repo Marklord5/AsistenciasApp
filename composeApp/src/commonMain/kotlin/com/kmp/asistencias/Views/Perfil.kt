@@ -62,16 +62,24 @@ fun Perfil(onLogout: () -> Unit) {
                         val base64Image = Base64.Default.encode(byteArray)
                         val request = RequestFoto(
                             idUsuario = 1, // TODO: Obtener el ID real
-                            documento = Documento(
-                                idTipoDocumento = 10,
-                                base64 = base64Image,
-                                extension = "jpg"
+                            documentos = listOf(
+                                Documento(
+                                    idTipoDocumento = 10,
+                                    base64 = base64Image,
+                                    extension = "jpg"
+                                )
                             )
                         )
+
                         val response = PerfilService.CambiarFoto(request)
-                        if (response.success) {
+                        // Comprobamos el status de forma segura ya que ahora es JsonElement
+                        val isSuccess = response.status?.toString()?.contains("Success", ignoreCase = true) == true
+                        
+                        if (isSuccess) {
                             val fotoResponse = PerfilService.ObtenerFoto()
                             fotoUrl = fotoResponse.data
+                        } else {
+                            println("Error en respuesta: ${response.message}")
                         }
                     } catch (e: Exception) {
                         println("Error al cambiar foto: ${e.message}")

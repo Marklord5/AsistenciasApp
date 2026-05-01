@@ -31,7 +31,7 @@ import com.kmp.asistencias.Views.Perfil
 fun App() {
     var isLoggedIn by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf(0) }
-    val titles = listOf("Inicio", "Historial", "Lector QR", "Reportes", "Perfil")
+    val titles = listOf("Inicio", "Historial", "Reportes", "Perfil")
 
     if (!isLoggedIn) {
         Login(onLoginSuccess = { isLoggedIn = true })

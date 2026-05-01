@@ -6,6 +6,7 @@ import com.kmp.asistencias.Models.LoginResponse
 import com.kmp.asistencias.Models.PerfilUsuarioResponse
 import com.kmp.asistencias.Models.RequestFoto
 import com.kmp.asistencias.Models.Documento
+import com.kmp.asistencias.Models.ResponseFoto
 import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -56,13 +57,16 @@ object Perfil {
 
 
 
-    suspend fun CambiarFoto(request: RequestFoto): LoginResponse {
-
-        return client.post(ApiConfig.UPDATE_FOTO) {
+    suspend fun CambiarFoto(request: RequestFoto): ResponseFoto {
+        val response = client.post(ApiConfig.UPDATE_FOTO) {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(request)
-        }.body()
+        }
+        val responseBody = response.body<String>()
+        println("DEBUG: Response JSON: $responseBody")
+        
+        return Json { ignoreUnknownKeys = true }.decodeFromString<ResponseFoto>(responseBody)
     }
 
 

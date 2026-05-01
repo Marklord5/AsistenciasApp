@@ -16,6 +16,6 @@ object ApiConfig {
     val GET_ACTIVIDAD = "$BASE_URL/Asistencia/GetActividadUsuario"
     val GET_PERFIL = "$BASE_URL/Asistencia/GetPerfilUsuario"
     val GET_FOTO = "$BASE_URL/Asistencia/GetFotoUsuario"
-    val UPDATE_FOTO = "$BASE_URL/Asistencia/GuardarDocumentosUsuario"
+    val UPDATE_FOTO = "$BASE_URL/Usuario/GuardarDocumentosUsuario"
     val GET_HISTORIAL = "$BASE_URL/Asistencia/GetHistorialUsuario"
 }

@@ -49,7 +49,7 @@ data class FotoPerfil(
 @Serializable
 data class RequestFoto(
     val idUsuario: Int,
-    val documento: Documento
+    val documentos: List<Documento>
 )
 
 @Serializable
@@ -58,3 +58,14 @@ data class Documento(
     val base64: String,
     val extension: String
 )
+
+@Serializable
+data class ResponseFoto(
+    val status: kotlinx.serialization.json.JsonElement? = null,
+    val message: String? = null,
+    val data: Int? = null,
+    val traceId: String? = null
+)
+
+
+
