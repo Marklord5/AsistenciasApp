@@ -26,6 +26,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import com.kmp.asistencias.Network.Crypto
+import kotlinx.coroutines.delay
 
 object Home {
     private val settings = Settings()
@@ -107,6 +108,9 @@ object Home {
 
         if (!isNetworkAvailable() || pendingRecords.isEmpty()) return results
 
+        // Pequeña espera por si el internet acaba de volver
+        delay(1000)
+
         for (record in pendingRecords) {
             try {
                 val jsonString = Json.encodeToString(record)
@@ -115,7 +119,7 @@ object Home {
                 val response: ResponseEntradaSalida = client.post(ApiConfig.REGISTRO_SINCRONIZACION) {
                     header("Authorization", "Bearer $token")
                     contentType(ContentType.Application.Json)
-                    setBody(EncryptedSyncRequest(en = encryptedData))
+                    setBody(EncryptedSyncRequest(Encriptado = encryptedData))
                 }.body()
 
                 if (response.status == "Success") {
@@ -130,9 +134,4 @@ object Home {
         }
         return results
     }
-
-
 }
-
-
-

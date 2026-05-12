@@ -58,6 +58,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
     fun cargarDatos() {
         scope.launch {
             try {
+                // Obtener datos del servidor
                 val perfilResponse = PerfilService.getPerfil()
                 userName = perfilResponse.data.perfil.firstOrNull()?.nombreCompleto ?: "Usuario"
 
@@ -65,7 +66,20 @@ fun Home(onNavigateToHistory: () -> Unit) {
                 fotoUrl = fotoResponse.data
 
                 val actividadResponse = HomeApi.ActividadUsuario()
-                actividades = actividadResponse.data
+                val serverActividades = actividadResponse.data
+
+                // Obtener registros pendientes locales para mostrarlos
+                val pendientes = com.kmp.asistencias.Network.SessionManager.getPendingRecords().map {
+                    ActividadUsuario(
+                        fechaCreacion = it.FechaHora,
+                        nombreDia = "",
+                        hora24h = it.FechaHora.split("T").lastOrNull()?.take(5) ?: "",
+                        etiquetaFecha = "${it.Tipo} (Pendiente)",
+                        tipo = it.Tipo
+                    )
+                }
+
+                actividades = pendientes + serverActividades
             } catch (e: Exception) {
                 println("Error fetching data in Home: ${e.message}")
             }

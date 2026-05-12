@@ -9,6 +9,9 @@ import platform.darwin.dispatch_get_main_queue
 actual object NetworkMonitor {
     actual val isOnline: Flow<Boolean> = callbackFlow {
         val monitor = nw_path_monitor_create()
+        val queue = dispatch_get_main_queue()
+        
+        nw_path_monitor_set_queue(monitor, queue)
         
         nw_path_monitor_set_update_handler(monitor) { path ->
             val status = nw_path_get_status(path)
