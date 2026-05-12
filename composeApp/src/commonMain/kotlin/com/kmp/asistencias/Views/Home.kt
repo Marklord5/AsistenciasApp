@@ -34,6 +34,7 @@ import com.kmp.asistencias.Utils.obtenerFechaActual
 import com.kmp.asistencias.Utils.obtenerHoraActual
 import com.kmp.asistencias.Models.RequestEntradaSalida
 import com.kmp.asistencias.Models.ActividadUsuario
+import com.kmp.asistencias.Utils.NetworkMonitor
 import com.kmp.asistencias.Network.Home as HomeApi
 import com.kmp.asistencias.Services.Perfil as PerfilService
 import com.russhwolf.settings.Settings
@@ -73,6 +74,16 @@ fun Home(onNavigateToHistory: () -> Unit) {
 
     LaunchedEffect(Unit) {
         cargarDatos()
+        // Sincronización automática cuando cambia el estado de internet
+        scope.launch {
+            NetworkMonitor.isOnline.collect { online ->
+                if (online) {
+                    println("Internet recuperado, sincronizando...")
+                    HomeApi.SincronizarPendientes()
+                    cargarDatos() // Recargar para ver los nuevos registros sincronizados
+                }
+            }
+        }
         while (true) {
             fecha = obtenerFechaActual()
             hora = obtenerHoraActual()
@@ -233,14 +244,15 @@ fun Home(onNavigateToHistory: () -> Unit) {
 
                             val response = HomeApi.RegistarEntrada(request,estaEnTurno)
                             
-                            if (response.status == "Success") {
+                            if (response.status == "Success" || response.status == "Offline") {
                                 estaEnTurno = !estaEnTurno
                                 showSuccess = true
-                                println("Registro exitoso: ${response.message}")
-                                settings.putBoolean("statusTurno", !settings.getBoolean("statusTurno", false))
-                                cargarDatos()
+                                settings.putBoolean("statusTurno", estaEnTurno)
+                                if (response.status == "Success") {
+                                    cargarDatos()
+                                }
+                                println("Registro procesado: ${response.message}")
                             } else {
-
                                 println("Error en registro: ${response.message}")
                             }
                         } catch (e: Exception) {

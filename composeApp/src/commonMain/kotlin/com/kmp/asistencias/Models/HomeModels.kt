@@ -23,8 +23,24 @@ data class RequestEntradaSalida (
 )
 
 @Serializable
+data class RequestSincronizacion(
+    val IdUsuario: Int,
+    val Tipo: String,
+    val FechaHora: String,
+    val Latitud: Double,
+    val Longitud: Double,
+    val UbicacionDetalle: String,
+    val Fuente: String
+)
+
+@Serializable
 data class EncryptedRequest(
     val en: String
+)
+
+@Serializable
+data class EncryptedSyncRequest(
+    val Encriptado: String
 )
 
 

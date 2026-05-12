@@ -20,4 +20,5 @@ object ApiConfig {
     val GET_HISTORIAL = "$BASE_URL/Asistencia/GetHistorialUsuario"
 
     val GET_DOCUMENTOS_LIST = "$BASE_URL/Asistencia/GetListaDocsUsuario"
+    val REGISTRO_SINCRONIZACION = "$BASE_URL/Asistencia/Registro_Sincronizacion"
 }

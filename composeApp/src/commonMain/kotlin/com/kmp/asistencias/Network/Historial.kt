@@ -1,7 +1,6 @@
 package com.kmp.asistencias.Network
 
 import com.kmp.asistencias.Models.ResponseActividaUsuario
-import com.kmp.asistencias.Network.Home.token
 import com.kmp.asistencias.Models.HistorialResponse
 import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
