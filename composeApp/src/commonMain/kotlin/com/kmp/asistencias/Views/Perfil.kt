@@ -50,6 +50,7 @@ fun Perfil(onLogout: () -> Unit) {
     var fotoUrl by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var isContentVisible by remember { mutableStateOf(false) }
+    var showAllHistory by remember { mutableStateOf(false) }
 
     @OptIn(ExperimentalEncodingApi::class)
     val singleImagePicker = rememberImagePickerLauncher(
@@ -212,9 +213,13 @@ fun Perfil(onLogout: () -> Unit) {
 
                 // Sección de Historial Reciente
                 RecentHistorySection(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    seeAllText = if (showAllHistory) "Ver menos" else "Ver todo",
+                    onSeeAllClick = { showAllHistory = !showAllHistory }
                 ) {
-                    val registros = perfilData?.data?.ultimosRegistros ?: emptyList()
+                    val allRegistros = perfilData?.data?.ultimosRegistros ?: emptyList()
+                    val registros = if (showAllHistory) allRegistros else allRegistros.take(3)
+
                     if (registros.isEmpty()) {
                         Text(
                             text = "No hay registros recientes",

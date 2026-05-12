@@ -278,6 +278,8 @@ fun HistoryItem(
 @Composable
 fun RecentHistorySection(
     modifier: Modifier = Modifier,
+    seeAllText: String = "Ver todo",
+    onSeeAllClick: () -> Unit = {},
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(
@@ -299,9 +301,10 @@ fun RecentHistorySection(
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "Ver todo",
+                text = seeAllText,
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.clickable { onSeeAllClick() }
             )
         }
         

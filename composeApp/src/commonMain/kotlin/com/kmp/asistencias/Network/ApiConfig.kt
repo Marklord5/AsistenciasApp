@@ -2,7 +2,7 @@ package com.kmp.asistencias.Network
 
 object ApiConfig {
     // Cambia esto a true para Producción o false para QA
-    private const val IS_PRODUCTION = false
+    private const val IS_PRODUCTION = true
 
     private const val BASE_URL_QA = "https://qa-asistenciasapi.jorchav.com.mx/api"
     private const val BASE_URL_PROD = "https://asistenciasapi.jorchav.com.mx/api" // Cambia esta URL cuando tengas la de producción
@@ -18,4 +18,6 @@ object ApiConfig {
     val GET_FOTO = "$BASE_URL/Asistencia/GetFotoUsuario"
     val UPDATE_FOTO = "$BASE_URL/Usuario/GuardarDocumentosUsuario"
     val GET_HISTORIAL = "$BASE_URL/Asistencia/GetHistorialUsuario"
+
+    val GET_DOCUMENTOS_LIST = "$BASE_URL/Asistencia/GetListaDocsUsuario"
 }
