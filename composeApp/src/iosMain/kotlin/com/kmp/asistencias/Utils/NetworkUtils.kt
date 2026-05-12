@@ -1,15 +1,25 @@
 package com.kmp.asistencias.Utils
 
-import platform.Network.nw_path_get_status
-import platform.Network.nw_path_monitor_create
-import platform.Network.nw_path_monitor_set_update_handler
-import platform.Network.nw_path_monitor_start
-import platform.Network.nw_path_status_satisfied
-import platform.darwin.dispatch_get_main_queue
+import platform.SystemConfiguration.*
+import platform.CoreFoundation.*
+import kotlinx.cinterop.*
+import platform.posix.sockaddr_in
 
+@OptIn(ExperimentalForeignApi::class)
 actual fun isNetworkAvailable(): Boolean {
-    // Implementación simple para iOS
-    // Nota: nw_path_monitor es asíncrono, para un check síncrono simple 
-    // en KMP a veces se asume true o se usa una variable global actualizada por el monitor
-    return true // Por ahora retornamos true, la sincronización fallará y se guardará offline
+    memScoped {
+        val zeroAddress = alloc<sockaddr_in>()
+        zeroAddress.sin_len = sizeOf<sockaddr_in>().toUByte()
+        zeroAddress.sin_family = platform.posix.AF_INET.toUByte()
+
+        val reachability = SCNetworkReachabilityCreateWithAddress(null, zeroAddress.ptr.reinterpret()) ?: return false
+        val flags = alloc<SCNetworkReachabilityFlagsVar>()
+        
+        if (!SCNetworkReachabilityGetFlags(reachability, flags.ptr)) return false
+        
+        val isReachable = (flags.value.toInt() and kSCNetworkFlagsReachable.toInt()) != 0
+        val needsConnection = (flags.value.toInt() and kSCNetworkFlagsConnectionRequired.toInt()) != 0
+        
+        return isReachable && !needsConnection
+    }
 }
