@@ -40,7 +40,7 @@ data class EncryptedRequest(
 
 @Serializable
 data class EncryptedSyncRequest(
-    val Encriptado: String
+    val en: String
 )
 
 

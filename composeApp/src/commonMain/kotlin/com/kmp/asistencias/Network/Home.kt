@@ -115,7 +115,7 @@ object Home {
                 val response: ResponseEntradaSalida = client.post(ApiConfig.REGISTRO_SINCRONIZACION) {
                     header("Authorization", "Bearer $token")
                     contentType(ContentType.Application.Json)
-                    setBody(EncryptedSyncRequest(Encriptado = encryptedData))
+                    setBody(EncryptedSyncRequest(en = encryptedData))
                 }.body()
 
                 if (response.status == "Success") {
