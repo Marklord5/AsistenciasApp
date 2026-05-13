@@ -93,16 +93,16 @@ fun Documentos() {
                     name = doc.nombreArchivo,
                     date = doc.tipoDocumento,
                     size = doc.extension,
-                    onViewClick = { 
-                        if (doc.urlArchivo.isNotEmpty()) {
-                            uriHandler.openUri(doc.urlArchivo)
-                        }
-                    },
-                    onDownloadClick = { 
+                    onViewClick = {
                         if (doc.urlArchivo.isNotEmpty()) {
                             uriHandler.openUri(doc.urlArchivo)
                         }
                     }
+                    /*onDownloadClick = {
+                        if (doc.urlArchivo.isNotEmpty()) {
+                            uriHandler.openUri(doc.urlArchivo)
+                        }
+                    }*/
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }

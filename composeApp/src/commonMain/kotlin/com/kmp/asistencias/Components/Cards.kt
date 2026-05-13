@@ -548,7 +548,7 @@ fun DocumentCard(
     date: String,
     size: String,
     onViewClick: () -> Unit,
-    onDownloadClick: () -> Unit,
+    //onDownloadClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -622,7 +622,7 @@ fun DocumentCard(
                 }
 
                 // Botón Descargar
-                Box(
+                /*Box(
                     modifier = Modifier
                         .size(36.dp)
                         .clip(CircleShape)
@@ -636,7 +636,7 @@ fun DocumentCard(
                         tint = Color(0xFF007AFF),
                         modifier = Modifier.size(18.dp)
                     )
-                }
+                }*/
             }
         }
     }

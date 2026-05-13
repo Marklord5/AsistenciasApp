@@ -34,6 +34,7 @@ import com.kmp.asistencias.Models.PerfilUsuarioResponse
 import com.kmp.asistencias.Models.RequestFoto
 import com.kmp.asistencias.Models.Documento
 import com.kmp.asistencias.Services.Perfil as PerfilService
+import com.kmp.asistencias.Network.SessionManager
 import com.russhwolf.settings.Settings
 import com.preat.peekaboo.image.picker.SelectionMode
 import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
@@ -80,7 +81,7 @@ fun Perfil(onLogout: () -> Unit) {
                         isLoading = true
                         val base64Image = Base64.Default.encode(byteArray)
                         val request = RequestFoto(
-                            idUsuario = 1, // TODO: Obtener el ID real
+                            idUsuario = SessionManager.getUserId(),
                             documentos = listOf(
                                 Documento(
                                     idTipoDocumento = 10,

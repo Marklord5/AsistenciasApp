@@ -35,6 +35,7 @@ import com.kmp.asistencias.Utils.obtenerHoraActual
 import com.kmp.asistencias.Models.RequestEntradaSalida
 import com.kmp.asistencias.Models.ActividadUsuario
 import com.kmp.asistencias.Utils.NetworkMonitor
+import com.kmp.asistencias.Network.SessionManager
 import com.kmp.asistencias.Network.Home as HomeApi
 import com.kmp.asistencias.Services.Perfil as PerfilService
 import com.russhwolf.settings.Settings
@@ -58,7 +59,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
     fun cargarDatos() {
         scope.launch {
             // 1. Cargar SIEMPRE los pendientes primero (están en el teléfono)
-            val pendientesLocales = com.kmp.asistencias.Network.SessionManager.getPendingRecords().map {
+            val pendientesLocales = SessionManager.getPendingRecords().map {
                 ActividadUsuario(
                     fechaCreacion = it.FechaHora,
                     nombreDia = "",
@@ -258,7 +259,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
                             val lon = settings.getDouble("last_lon", 0.0)
                             
                             val request = RequestEntradaSalida(
-                                IdUsuario = 1, // TODO: Obtener el ID real del usuario logueado
+                                IdUsuario = SessionManager.getUserId(),
                                 Latitud = lat,
                                 Longitud = lon,
                                 UbicacionDetalle = "Ubicación desde App Movil",

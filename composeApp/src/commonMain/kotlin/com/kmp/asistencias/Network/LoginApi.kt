@@ -10,6 +10,10 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 object LoginApi {
     private val client = HttpClient {
@@ -38,11 +42,14 @@ object LoginApi {
             }.body()
 
             if (response.success && response.data != null) {
+                // Extraer el id_usuario del JWT
+                val userId = extractUserId(response.data.access_token)
+                
                 // Guardamos los tokens localmente
                 SessionManager.saveSession(
                     accessToken = response.data.access_token,
                     refreshToken = response.data.refresh_token,
-                    userId = 1 
+                    userId = userId
                 )
             }
             response
@@ -53,6 +60,29 @@ object LoginApi {
             } else {
                 LoginResponse(success = false, message = "Error de conexión: ${e.message}")
             }
+        }
+    }
+
+    @OptIn(ExperimentalEncodingApi::class)
+    private fun extractUserId(token: String): Int {
+        return try {
+            val parts = token.split(".")
+            if (parts.size < 2) return 1
+            
+            var payload = parts[1]
+            // El payload de JWT suele no tener padding, lo agregamos para Base64.UrlSafe
+            val missingPadding = 4 - (payload.length % 4)
+            if (missingPadding < 4) {
+                payload += "=".repeat(missingPadding)
+            }
+
+            val decoded = Base64.UrlSafe.decode(payload).decodeToString()
+            val jsonElement = Json.parseToJsonElement(decoded)
+            val id = jsonElement.jsonObject["id_usuario"]?.jsonPrimitive?.content
+            id?.toIntOrNull() ?: 1
+        } catch (e: Exception) {
+            println("Error al extraer userId del token: ${e.message}")
+            1
         }
     }
 
