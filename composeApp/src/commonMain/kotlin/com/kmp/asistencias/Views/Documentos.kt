@@ -16,20 +16,45 @@ import com.kmp.asistencias.Components.DocumentCard
 import com.kmp.asistencias.Models.DocumentoUsuario
 import com.kmp.asistencias.Network.Documentos as DocumentosApi
 
+import com.kmp.asistencias.Utils.NetworkMonitor
+import kotlinx.coroutines.launch
+
 @Composable
 fun Documentos() {
     val uriHandler = LocalUriHandler.current
     var documentos by remember { mutableStateOf<List<DocumentoUsuario>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
+    val scope = rememberCoroutineScope()
+
+    fun cargarDatos() {
+        scope.launch {
+            try {
+                isLoading = true
+                val response = DocumentosApi.GetListaDomcumentos()
+                documentos = response.data
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                isLoading = false
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
-        try {
-            val response = DocumentosApi.GetListaDomcumentos()
-            documentos = response.data
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            isLoading = false
+        cargarDatos()
+        
+        // Recargar si vuelve el internet y no hay datos
+        scope.launch {
+            NetworkMonitor.isOnline.collect { online ->
+                if (online && documentos.isEmpty()) {
+                    try {
+                        println("Documentos: Red recuperada, reintentando carga...")
+                        cargarDatos()
+                    } catch (e: Exception) {
+                        println("Error al recargar documentos: ${e.message}")
+                    }
+                }
+            }
         }
     }
 

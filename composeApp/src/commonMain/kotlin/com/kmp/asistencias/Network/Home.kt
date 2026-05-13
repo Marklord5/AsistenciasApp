@@ -11,6 +11,7 @@ import com.kmp.asistencias.Models.ResponseEntradaSalida
 import com.kmp.asistencias.Utils.isNetworkAvailable
 import com.kmp.asistencias.Utils.obtenerFechaActual
 import com.kmp.asistencias.Utils.obtenerHoraActual
+import com.kmp.asistencias.Utils.obtenerFechaHoraISO
 import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -33,6 +34,8 @@ object Home {
     private val token: String
         get() = SessionManager.getAccessToken()
 
+    private var isSyncing = false
+
     private val client = HttpClient {
         install(ContentNegotiation) {
             json(Json {
@@ -43,14 +46,13 @@ object Home {
     }
 
     suspend fun RegistarEntrada(requestEntradaSalida: RequestEntradaSalida, Tipo: Boolean): ResponseEntradaSalida {
+        val tipoStr = if (Tipo) "SALIDA" else "ENTRADA"
+        
         if (!isNetworkAvailable()) {
-            val tipoStr = if (Tipo) "SALIDA" else "ENTRADA"
-            val fechaHora = "${obtenerFechaActual()}T${obtenerHoraActual()}"
-            
             val pendingRecord = RequestSincronizacion(
                 IdUsuario = requestEntradaSalida.IdUsuario,
                 Tipo = tipoStr,
-                FechaHora = fechaHora,
+                FechaHora = obtenerFechaHoraISO(),
                 Latitud = requestEntradaSalida.Latitud,
                 Longitud = requestEntradaSalida.Longitud,
                 UbicacionDetalle = requestEntradaSalida.UbicacionDetalle,
@@ -79,12 +81,35 @@ object Home {
             ApiConfig.REGISTRO_ENTRADA
         }
 
-        return client.post(endpoint) {
-            header("Authorization", "Bearer $token")
-            contentType(ContentType.Application.Json)
-            setBody(EncryptedRequest(en = encryptedData))
-        }.body()
-
+        return try {
+            val response: ResponseEntradaSalida = client.post(endpoint) {
+                header("Authorization", "Bearer $token")
+                contentType(ContentType.Application.Json)
+                setBody(EncryptedRequest(en = encryptedData))
+            }.body()
+            response
+        } catch (e: Exception) {
+            println("Error al registrar (intentando guardar local): ${e.message}")
+            
+            val pendingRecord = RequestSincronizacion(
+                IdUsuario = requestEntradaSalida.IdUsuario,
+                Tipo = tipoStr,
+                FechaHora = obtenerFechaHoraISO(),
+                Latitud = requestEntradaSalida.Latitud,
+                Longitud = requestEntradaSalida.Longitud,
+                UbicacionDetalle = requestEntradaSalida.UbicacionDetalle,
+                Fuente = requestEntradaSalida.Fuente
+            )
+            
+            SessionManager.savePendingRecord(pendingRecord)
+            
+            ResponseEntradaSalida(
+                status = "Offline",
+                message = "Error de red, se guardó localmente.",
+                data = 0,
+                traceId = ""
+            )
+        }
     }
 
     suspend fun ActividadUsuario(): ResponseActividaUsuario {
@@ -103,34 +128,50 @@ object Home {
     }
 
     suspend fun SincronizarPendientes(): List<String> {
+        if (isSyncing) return emptyList()
+        
         val pendingRecords = SessionManager.getPendingRecords()
+        if (pendingRecords.isEmpty()) return emptyList()
+
         val results = mutableListOf<String>()
+        isSyncing = true
+        
+        try {
+            println("SincronizarPendientes: Iniciando sincronización de ${pendingRecords.size} registros")
+            
+            // Esperar un poco para asegurar que la conexión sea estable si acaba de volver
+            delay(1500)
 
-        if (!isNetworkAvailable() || pendingRecords.isEmpty()) return results
+            for (record in pendingRecords) {
+                try {
+                    val jsonString = Json.encodeToString(record)
+                    val encryptedData = Crypto.encrypt(jsonString)
 
-        // Pequeña espera por si el internet acaba de volver
-        delay(1000)
+                    println("Sincronizando registro: ${record.Tipo} - ${record.FechaHora}")
 
-        for (record in pendingRecords) {
-            try {
-                val jsonString = Json.encodeToString(record)
-                val encryptedData = Crypto.encrypt(jsonString)
+                    val response: ResponseEntradaSalida = client.post(ApiConfig.REGISTRO_SINCRONIZACION) {
+                        header("Authorization", "Bearer $token")
+                        contentType(ContentType.Application.Json)
+                        setBody(EncryptedSyncRequest(en = encryptedData))
+                    }.body()
 
-                val response: ResponseEntradaSalida = client.post(ApiConfig.REGISTRO_SINCRONIZACION) {
-                    header("Authorization", "Bearer $token")
-                    contentType(ContentType.Application.Json)
-                    setBody(EncryptedSyncRequest(en = encryptedData))
-                }.body()
-
-                if (response.status == "Success") {
-                    SessionManager.removePendingRecord(record)
-                    results.add("Sincronizado: ${record.Tipo} - ${record.FechaHora}")
-                } else {
-                    results.add("Error al sincronizar: ${response.message}")
+                    if (response.status == "Success") {
+                        results.add("Sincronizado: ${record.Tipo} - ${record.FechaHora}")
+                        println("Sincronización exitosa para: ${record.Tipo}")
+                    } else {
+                        results.add("Error al sincronizar: ${response.message}")
+                        println("Error del servidor al sincronizar: ${response.message}")
+                    }
+                } catch (e: Exception) {
+                    results.add("Excepción al sincronizar: ${e.message}")
+                    println("Excepción al sincronizar registro: ${e.message}")
+                    if (!isNetworkAvailable()) break
                 }
-            } catch (e: Exception) {
-                results.add("Excepción al sincronizar: ${e.message}")
             }
+            // LA SOLUCIÓN QUE BUSCAS: Borrar todo lo local de un plumazo al terminar el ciclo
+            SessionManager.clearPendingRecords()
+        } finally {
+            isSyncing = false
         }
         return results
     }

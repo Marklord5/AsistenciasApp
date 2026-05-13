@@ -7,7 +7,6 @@ import com.kmp.asistencias.Models.PerfilUsuarioResponse
 import com.kmp.asistencias.Models.RequestFoto
 import com.kmp.asistencias.Models.Documento
 import com.kmp.asistencias.Models.ResponseFoto
-import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -23,10 +22,12 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.contentType
 
+import com.kmp.asistencias.Network.SessionManager
+
 object Perfil {
 
-    private val settings = Settings()
-    val token = settings.getString("token", "")
+    private val token: String
+        get() = SessionManager.getAccessToken()
 
     private val client = HttpClient {
         install(ContentNegotiation) {
@@ -38,8 +39,6 @@ object Perfil {
     }
 
     suspend fun getPerfil(): PerfilUsuarioResponse {
-
-
         return client.get(ApiConfig.GET_PERFIL) {
             header("Authorization", "Bearer $token")
             accept(ContentType.Application.Json)
@@ -47,15 +46,11 @@ object Perfil {
     }
 
     suspend fun ObtenerFoto(): FotoPerfil {
-
-
         return client.get(ApiConfig.GET_FOTO) {
             header("Authorization", "Bearer $token")
             accept(ContentType.Application.Json)
         }.body()
     }
-
-
 
     suspend fun CambiarFoto(request: RequestFoto): ResponseFoto {
         val response = client.post(ApiConfig.UPDATE_FOTO) {
@@ -68,6 +63,4 @@ object Perfil {
         
         return Json { ignoreUnknownKeys = true }.decodeFromString<ResponseFoto>(responseBody)
     }
-
-
 }

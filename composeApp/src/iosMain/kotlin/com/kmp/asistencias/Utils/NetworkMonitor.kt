@@ -6,22 +6,28 @@ import kotlinx.coroutines.flow.callbackFlow
 import platform.Network.*
 import platform.darwin.dispatch_get_main_queue
 
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.distinctUntilChanged
+
 actual object NetworkMonitor {
     actual val isOnline: Flow<Boolean> = callbackFlow {
         val monitor = nw_path_monitor_create()
         val queue = dispatch_get_main_queue()
         
-        nw_path_monitor_set_queue(monitor, queue)
-        
         nw_path_monitor_set_update_handler(monitor) { path ->
             val status = nw_path_get_status(path)
-            trySend(status == nw_path_status_satisfied)
+            val online = status == nw_path_status_satisfied
+            println("iOS NetworkMonitor: Status changed to $online")
+            trySend(online)
         }
         
+        nw_path_monitor_set_queue(monitor, queue)
         nw_path_monitor_start(monitor)
         
         awaitClose {
             nw_path_monitor_cancel(monitor)
         }
-    }
+    }.onStart {
+        emit(isNetworkAvailable())
+    }.distinctUntilChanged()
 }

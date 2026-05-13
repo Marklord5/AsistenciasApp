@@ -57,8 +57,22 @@ fun Home(onNavigateToHistory: () -> Unit) {
 
     fun cargarDatos() {
         scope.launch {
+            // 1. Cargar SIEMPRE los pendientes primero (están en el teléfono)
+            val pendientesLocales = com.kmp.asistencias.Network.SessionManager.getPendingRecords().map {
+                ActividadUsuario(
+                    fechaCreacion = it.FechaHora,
+                    nombreDia = "",
+                    hora24h = it.FechaHora.split("T").lastOrNull()?.take(5) ?: "",
+                    etiquetaFecha = "${it.Tipo} (Pendiente)",
+                    tipo = it.Tipo
+                )
+            }
+            
+            // Mostramos los pendientes de inmediato mientras esperamos al servidor
+            actividades = pendientesLocales
+
             try {
-                // Obtener datos del servidor
+                // 2. Intentar obtener datos del servidor
                 val perfilResponse = PerfilService.getPerfil()
                 userName = perfilResponse.data.perfil.firstOrNull()?.nombreCompleto ?: "Usuario"
 
@@ -68,20 +82,11 @@ fun Home(onNavigateToHistory: () -> Unit) {
                 val actividadResponse = HomeApi.ActividadUsuario()
                 val serverActividades = actividadResponse.data
 
-                // Obtener registros pendientes locales para mostrarlos
-                val pendientes = com.kmp.asistencias.Network.SessionManager.getPendingRecords().map {
-                    ActividadUsuario(
-                        fechaCreacion = it.FechaHora,
-                        nombreDia = "",
-                        hora24h = it.FechaHora.split("T").lastOrNull()?.take(5) ?: "",
-                        etiquetaFecha = "${it.Tipo} (Pendiente)",
-                        tipo = it.Tipo
-                    )
-                }
-
-                actividades = pendientes + serverActividades
+                // 3. Combinar ambos si el servidor respondió
+                actividades = pendientesLocales + serverActividades
             } catch (e: Exception) {
-                println("Error fetching data in Home: ${e.message}")
+                println("Error fetching data in Home (Offline mode): ${e.message}")
+                // Si falla el servidor, nos quedamos con los pendientes que ya cargamos
             }
         }
     }
@@ -92,9 +97,13 @@ fun Home(onNavigateToHistory: () -> Unit) {
         scope.launch {
             NetworkMonitor.isOnline.collect { online ->
                 if (online) {
-                    println("Internet recuperado, sincronizando...")
-                    HomeApi.SincronizarPendientes()
-                    cargarDatos() // Recargar para ver los nuevos registros sincronizados
+                    try {
+                        println("Home: Internet recuperado, sincronizando...")
+                        HomeApi.SincronizarPendientes()
+                        cargarDatos() // Recargar para ver los nuevos registros sincronizados
+                    } catch (e: Exception) {
+                        println("Error durante sincronización automática: ${e.message}")
+                    }
                 }
             }
         }
@@ -262,9 +271,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
                                 estaEnTurno = !estaEnTurno
                                 showSuccess = true
                                 settings.putBoolean("statusTurno", estaEnTurno)
-                                if (response.status == "Success") {
-                                    cargarDatos()
-                                }
+                                cargarDatos() // Recargar siempre para ver registros locales o del servidor
                                 println("Registro procesado: ${response.message}")
                             } else {
                                 println("Error en registro: ${response.message}")

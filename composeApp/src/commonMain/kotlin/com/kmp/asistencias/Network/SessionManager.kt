@@ -59,7 +59,7 @@ object SessionManager {
     
     fun removePendingRecord(record: RequestSincronizacion) {
         val currentRecords = getPendingRecords().toMutableList()
-        currentRecords.remove(record)
+        currentRecords.removeAll { it.FechaHora == record.FechaHora }
         val jsonString = json.encodeToString(currentRecords)
         settings[KEY_PENDING_RECORDS] = jsonString
     }

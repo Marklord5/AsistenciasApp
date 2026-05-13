@@ -42,6 +42,8 @@ import kotlinx.coroutines.launch
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
+import com.kmp.asistencias.Utils.NetworkMonitor
+
 @Composable
 fun Perfil(onLogout: () -> Unit) {
     val settings = remember { Settings() }
@@ -51,6 +53,21 @@ fun Perfil(onLogout: () -> Unit) {
     var isLoading by remember { mutableStateOf(true) }
     var isContentVisible by remember { mutableStateOf(false) }
     var showAllHistory by remember { mutableStateOf(false) }
+
+    fun cargarDatos() {
+        scope.launch {
+            try {
+                isLoading = true
+                perfilData = PerfilService.getPerfil()
+                val fotoResponse = PerfilService.ObtenerFoto()
+                fotoUrl = fotoResponse.data 
+            } catch (e: Exception) {
+                println("Error fetching perfil: ${e.message}")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
 
     @OptIn(ExperimentalEncodingApi::class)
     val singleImagePicker = rememberImagePickerLauncher(
@@ -94,16 +111,20 @@ fun Perfil(onLogout: () -> Unit) {
     )
 
     LaunchedEffect(Unit) {
-        try {
-            perfilData = PerfilService.getPerfil()
-            val fotoResponse = PerfilService.ObtenerFoto()
-            fotoUrl = fotoResponse.data // Asumimos que la URL viene en 'message'
-            println("Error fetching perfil: $fotoUrl")
-
-        } catch (e: Exception) {
-            println("Error fetching perfil: ${e.message}")
-        } finally {
-            isLoading = false
+        cargarDatos()
+        
+        // Recargar si vuelve el internet y no hay datos
+        scope.launch {
+            NetworkMonitor.isOnline.collect { online ->
+                if (online && perfilData == null) {
+                    try {
+                        println("Perfil: Red recuperada, reintentando carga...")
+                        cargarDatos()
+                    } catch (e: Exception) {
+                        println("Error al recargar perfil: ${e.message}")
+                    }
+                }
+            }
         }
     }
 

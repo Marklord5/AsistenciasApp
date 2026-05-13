@@ -42,7 +42,5 @@ actual object NetworkMonitor {
         awaitClose {
             connectivityManager.unregisterNetworkCallback(callback)
         }
-    }.onStart { 
-        emit(isNetworkAvailable()) 
     }.distinctUntilChanged()
 }

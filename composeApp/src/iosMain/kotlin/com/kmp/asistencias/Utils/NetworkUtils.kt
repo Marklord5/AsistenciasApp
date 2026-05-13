@@ -14,7 +14,7 @@ actual fun isNetworkAvailable(): Boolean {
 
         val reachability = SCNetworkReachabilityCreateWithAddress(null, zeroAddress.ptr.reinterpret()) ?: return false
         val flags = alloc<SCNetworkReachabilityFlagsVar>()
-        
+
         if (!SCNetworkReachabilityGetFlags(reachability, flags.ptr)) return false
         
         val isReachable = (flags.value.toInt() and kSCNetworkFlagsReachable.toInt()) != 0

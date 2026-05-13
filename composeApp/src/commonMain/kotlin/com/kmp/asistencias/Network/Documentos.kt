@@ -1,7 +1,6 @@
 package com.kmp.asistencias.Network
 
 import com.kmp.asistencias.Models.DocsUsuarioResponse
-import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -23,8 +22,8 @@ object Documentos {
         }
     }
 
-    private val settings = Settings()
-    private val token = settings.getString("token", "")
+    private val token: String
+        get() = SessionManager.getAccessToken()
 
     suspend fun GetListaDomcumentos(): DocsUsuarioResponse {
         return client.get(ApiConfig.GET_DOCUMENTOS_LIST) {

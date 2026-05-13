@@ -14,3 +14,9 @@ actual fun obtenerHoraActual(): String {
     formatter.dateFormat = "HH:mm"
     return formatter.stringFromDate(NSDate())
 }
+
+actual fun obtenerFechaHoraISO(): String {
+    val formatter = NSDateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+    return formatter.stringFromDate(NSDate())
+}

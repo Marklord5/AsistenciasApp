@@ -15,20 +15,45 @@ import com.kmp.asistencias.Components.HistorySectionHeader
 import com.kmp.asistencias.Components.LoadingOverlay
 import com.kmp.asistencias.Models.HistorialData
 
+import com.kmp.asistencias.Utils.NetworkMonitor
+import kotlinx.coroutines.launch
+
 @Composable
 fun Historial() {
     var historialData by remember { mutableStateOf<HistorialData?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var isContentVisible by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    fun cargarDatos() {
+        scope.launch {
+            try {
+                isLoading = true
+                val response = com.kmp.asistencias.Network.Historial.Historial()
+                historialData = response.data
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                isLoading = false
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
-        try {
-            val response = com.kmp.asistencias.Network.Historial.Historial()
-            historialData = response.data
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            isLoading = false
+        cargarDatos()
+        
+        // Escuchar cambios de red para recargar automáticamente
+        scope.launch {
+            NetworkMonitor.isOnline.collect { online ->
+                if (online && historialData == null) {
+                    try {
+                        println("Historial: Red recuperada, reintentando carga...")
+                        cargarDatos()
+                    } catch (e: Exception) {
+                        println("Error al recargar historial: ${e.message}")
+                    }
+                }
+            }
         }
     }
 
