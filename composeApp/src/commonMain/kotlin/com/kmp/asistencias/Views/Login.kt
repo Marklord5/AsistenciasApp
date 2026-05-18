@@ -1,5 +1,6 @@
 package com.kmp.asistencias.Views
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -17,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -24,6 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import asistencias.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.painterResource
 import com.kmp.asistencias.Components.CustomTextField
 import com.kmp.asistencias.Components.PrimaryButton
 import com.kmp.asistencias.Network.LoginApi
@@ -69,6 +73,25 @@ fun Login(onLoginSuccess: () -> Unit) {
                 .clip(RoundedCornerShape(48.dp))
                 .background(PrimaryGradient) 
         ) {
+            Image(
+                painter = painterResource(Res.drawable.Jorchav_Home),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.CenterStart
+            )
+
+            // Gradiente para mejorar legibilidad del texto blanco sobre fondo claro
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        androidx.compose.ui.graphics.Brush.verticalGradient(
+                            colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.3f)),
+                            startY = 400f
+                        )
+                    )
+            )
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
