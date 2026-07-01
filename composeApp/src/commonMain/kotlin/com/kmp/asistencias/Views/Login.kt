@@ -189,13 +189,13 @@ fun Login(onLoginSuccess: () -> Unit) {
                     modifier = Modifier.padding(start = 4.dp)
                 )
             }
-            Text(
+           /* Text(
                 text = "¿Olvidaste tu contraseña?",
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.clickable { /* TODO */ }
-            )
+            )*/
         }
 
         Spacer(modifier = Modifier.height(24.dp))
