@@ -248,7 +248,7 @@ fun Login(onLoginSuccess: () -> Unit) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text(
+        /*Text(
             text = buildAnnotatedString {
                 withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
                     append("¿No tienes cuenta? ")
@@ -259,7 +259,7 @@ fun Login(onLoginSuccess: () -> Unit) {
             },
             fontSize = 15.sp,
             modifier = Modifier.clickable { /* TODO */ }
-        )
+        )*/
 
         Spacer(modifier = Modifier.height(20.dp))
 
