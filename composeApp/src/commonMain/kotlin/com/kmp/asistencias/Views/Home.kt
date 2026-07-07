@@ -9,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -16,10 +17,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -39,6 +40,11 @@ import com.kmp.asistencias.Network.SessionManager
 import com.kmp.asistencias.Network.Home as HomeApi
 import com.kmp.asistencias.Services.Perfil as PerfilService
 import com.russhwolf.settings.Settings
+import dev.jordond.compass.Priority
+import dev.jordond.compass.geolocation.Geolocator
+import dev.jordond.compass.geolocation.Locator
+import dev.jordond.compass.geolocation.mobile.mobile
+import dev.jordond.compass.geolocation.hasPermission
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -47,6 +53,9 @@ fun Home(onNavigateToHistory: () -> Unit) {
     val scope = rememberCoroutineScope()
     val settings = remember { Settings() }
     var estaEnTurno by remember { mutableStateOf(settings.getBoolean("statusTurno", false)) }
+
+    val geolocator = remember { Geolocator(Locator.mobile()) }
+    var tienePermiso by remember { mutableStateOf(false) }
 
 
     var fecha by remember { mutableStateOf("") }
@@ -93,6 +102,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
     }
 
     LaunchedEffect(Unit) {
+        tienePermiso = geolocator.hasPermission()
         cargarDatos()
         // Sincronización automática cuando cambia el estado de internet
         scope.launch {
@@ -242,54 +252,84 @@ fun Home(onNavigateToHistory: () -> Unit) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            AttendanceMap(
-                onRecenterClick = { lat, lon ->
-                    println("Recentering to: $lat, $lon")
-                }
-            )
+            if (tienePermiso) {
+                AttendanceMap(
+                    onRecenterClick = { lat, lon ->
+                        println("Recentering to: $lat, $lon")
+                    }
+                )
 
-            Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-            SlideToActButton(
-                text = if (estaEnTurno) "Desliza para Salida" else "Desliza para Registrarte",
-                onConfirm = {
-                    scope.launch {
-                        try {
-                            val lat = settings.getDouble("last_lat", 0.0)
-                            val lon = settings.getDouble("last_lon", 0.0)
-                            
-                            val request = RequestEntradaSalida(
-                                IdUsuario = SessionManager.getUserId(),
-                                Latitud = lat,
-                                Longitud = lon,
-                                UbicacionDetalle = "Ubicación desde App Movil",
-                                Fuente = "APP_MOVIL"
-                            )
+                SlideToActButton(
+                    text = if (estaEnTurno) "Desliza para Salida" else "Desliza para Registrarte",
+                    onConfirm = {
+                        scope.launch {
+                            try {
+                                val lat = settings.getDouble("last_lat", 0.0)
+                                val lon = settings.getDouble("last_lon", 0.0)
 
-                            val response = HomeApi.RegistarEntrada(request,estaEnTurno)
-                            
-                            if (response.status == "Success" || response.status == "Offline") {
-                                estaEnTurno = !estaEnTurno
-                                showSuccess = true
-                                settings.putBoolean("statusTurno", estaEnTurno)
-                                cargarDatos() // Recargar siempre para ver registros locales o del servidor
-                                println("Registro procesado: ${response.message}")
-                            } else {
-                                println("Error en registro: ${response.message}")
+                                val request = RequestEntradaSalida(
+                                    IdUsuario = SessionManager.getUserId(),
+                                    Latitud = lat,
+                                    Longitud = lon,
+                                    UbicacionDetalle = "Ubicación desde App Movil",
+                                    Fuente = "APP_MOVIL"
+                                )
+
+                                val response = HomeApi.RegistarEntrada(request, estaEnTurno)
+
+                                if (response.status == "Success" || response.status == "Offline") {
+                                    estaEnTurno = !estaEnTurno
+                                    showSuccess = true
+                                    settings.putBoolean("statusTurno", estaEnTurno)
+                                    cargarDatos() // Recargar siempre para ver registros locales o del servidor
+                                    println("Registro procesado: ${response.message}")
+                                } else {
+                                    println("Error en registro: ${response.message}")
+                                }
+                            } catch (e: Exception) {
+                                println("Error de red: ${e.message}")
                             }
-                        } catch (e: Exception) {
-                            println("Error de red: ${e.message}")
                         }
                     }
-                }
-            )
+                )
 
-            Text(
-                text = "Asegúrate de estar en tu zona de trabajo",
-                modifier = Modifier.padding(top = 12.dp),
-                color = Color.LightGray,
-                fontSize = 12.sp
-            )
+                Text(
+                    text = "Asegúrate de estar en tu zona de trabajo",
+                    modifier = Modifier.padding(top = 12.dp),
+                    color = Color.LightGray,
+                    fontSize = 12.sp
+                )
+            } else {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    color = Color.White,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.LocationOn,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Text(
+                            text = "Para que la aplicación acceda a tu ubicación, ve a Configuración > permitir que Asistencia Jorchav acceda a > Ubicacion . Asegúrate de que la Localización esté activada",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 20.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
 
