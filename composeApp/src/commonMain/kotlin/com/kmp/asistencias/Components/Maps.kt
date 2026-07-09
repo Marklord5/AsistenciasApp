@@ -25,9 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import dev.jordond.compass.Priority
-import dev.jordond.compass.geolocation.Geolocator
-import dev.jordond.compass.geolocation.Locator
-import dev.jordond.compass.geolocation.mobile.mobile
+import com.kmp.asistencias.Utils.LocationProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 @Composable
@@ -41,8 +39,8 @@ fun AttendanceMap(
     // Guarda y lee la última ubicación conocida
     val settings = remember { Settings() }
 
-    // Objeto encargado de obtener la ubicación del dispositivo
-    val geolocator = remember { Geolocator(Locator.mobile()) }
+    // Objeto encargado de obtener la ubicación del dispositivo (instancia compartida)
+    val geolocator = LocationProvider.geolocator
 
     // Coordenadas usadas para centrar el mapa
     var mapLat by remember { mutableStateOf(settings.getDouble("last_lat", 0.0)) }
@@ -70,10 +68,11 @@ fun AttendanceMap(
         // Obtiene una ubicación rápida guardada por el sistema
         geolocator.lastLocation().onSuccess {
             updateLocation(it.coordinates.latitude, it.coordinates.longitude)
+            LocationProvider.permisoUbicacion.value = true
         }
 
-        // Obtiene una ubicación más actual
-        geolocator.current(Priority.Balanced).onSuccess {
+        // Obtiene una ubicación más actual (en iOS esto dispara el diálogo de permisos)
+        LocationProvider.obtenerUbicacion(Priority.Balanced).onSuccess {
             updateLocation(it.coordinates.latitude, it.coordinates.longitude)
         }
     }
@@ -146,7 +145,7 @@ fun AttendanceMap(
                         isFetching = true
 
                         // Busca la ubicación exacta actual
-                        geolocator.current(Priority.HighAccuracy).onSuccess {
+                        LocationProvider.obtenerUbicacion(Priority.HighAccuracy).onSuccess {
                             updateLocation(
                                 it.coordinates.latitude,
                                 it.coordinates.longitude

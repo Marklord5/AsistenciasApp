@@ -40,11 +40,7 @@ import com.kmp.asistencias.Network.SessionManager
 import com.kmp.asistencias.Network.Home as HomeApi
 import com.kmp.asistencias.Services.Perfil as PerfilService
 import com.russhwolf.settings.Settings
-import dev.jordond.compass.Priority
-import dev.jordond.compass.geolocation.Geolocator
-import dev.jordond.compass.geolocation.Locator
-import dev.jordond.compass.geolocation.mobile.mobile
-import dev.jordond.compass.geolocation.hasPermission
+import com.kmp.asistencias.Utils.LocationProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -54,8 +50,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
     val settings = remember { Settings() }
     var estaEnTurno by remember { mutableStateOf(settings.getBoolean("statusTurno", false)) }
 
-    val geolocator = remember { Geolocator(Locator.mobile()) }
-    var tienePermiso by remember { mutableStateOf(false) }
+    var tienePermiso by remember { mutableStateOf(true) }
 
 
     var fecha by remember { mutableStateOf("") }
@@ -102,8 +97,15 @@ fun Home(onNavigateToHistory: () -> Unit) {
     }
 
     LaunchedEffect(Unit) {
-        tienePermiso = geolocator.hasPermission()
         cargarDatos()
+        // El mapa (AttendanceMap) es quien pide la ubicación al iniciar y dispara el diálogo
+        // de permisos en iOS. Aquí solo observamos el resultado real de esa petición:
+        // el aviso aparece únicamente si el permiso fue negado o la localización está apagada.
+        scope.launch {
+            LocationProvider.permisoUbicacion.collect { estado ->
+                tienePermiso = estado != false
+            }
+        }
         // Sincronización automática cuando cambia el estado de internet
         scope.launch {
             NetworkMonitor.isOnline.collect { online ->
@@ -252,66 +254,24 @@ fun Home(onNavigateToHistory: () -> Unit) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            // Se muestra el mapa O el aviso de permisos, nunca ambos
             if (tienePermiso) {
                 AttendanceMap(
                     onRecenterClick = { lat, lon ->
                         println("Recentering to: $lat, $lon")
                     }
                 )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                SlideToActButton(
-                    text = if (estaEnTurno) "Desliza para Salida" else "Desliza para Registrarte",
-                    onConfirm = {
-                        scope.launch {
-                            try {
-                                val lat = settings.getDouble("last_lat", 0.0)
-                                val lon = settings.getDouble("last_lon", 0.0)
-
-                                val request = RequestEntradaSalida(
-                                    IdUsuario = SessionManager.getUserId(),
-                                    Latitud = lat,
-                                    Longitud = lon,
-                                    UbicacionDetalle = "Ubicación desde App Movil",
-                                    Fuente = "APP_MOVIL"
-                                )
-
-                                val response = HomeApi.RegistarEntrada(request, estaEnTurno)
-
-                                if (response.status == "Success" || response.status == "Offline") {
-                                    estaEnTurno = !estaEnTurno
-                                    showSuccess = true
-                                    settings.putBoolean("statusTurno", estaEnTurno)
-                                    cargarDatos() // Recargar siempre para ver registros locales o del servidor
-                                    println("Registro procesado: ${response.message}")
-                                } else {
-                                    println("Error en registro: ${response.message}")
-                                }
-                            } catch (e: Exception) {
-                                println("Error de red: ${e.message}")
-                            }
-                        }
-                    }
-                )
-
-                Text(
-                    text = "Asegúrate de estar en tu zona de trabajo",
-                    modifier = Modifier.padding(top = 12.dp),
-                    color = Color.LightGray,
-                    fontSize = 12.sp
-                )
             } else {
                 Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    color = Color.White,
+                    modifier = Modifier.fillMaxWidth().height(300.dp),
+                    shape = RoundedCornerShape(40.dp),
+                    color = MaterialTheme.colorScheme.surface,
                     border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                 ) {
                     Column(
-                        modifier = Modifier.padding(20.dp),
+                        modifier = Modifier.padding(24.dp).fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.Center
                     ) {
                         Icon(
                             Icons.Default.LocationOn,
@@ -319,6 +279,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(32.dp)
                         )
+                        Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             text = "Para que la aplicación acceda a tu ubicación, ve a Configuración > permitir que Asistencia Jorchav acceda a > Ubicacion . Asegúrate de que la Localización esté activada",
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -329,7 +290,58 @@ fun Home(onNavigateToHistory: () -> Unit) {
                         )
                     }
                 }
+
+                // Mientras no haya permiso, reintenta cada 5s por si el usuario lo activa en Configuración
+                LaunchedEffect(Unit) {
+                    while (true) {
+                        delay(5000)
+                        LocationProvider.obtenerUbicacion()
+                    }
+                }
             }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            SlideToActButton(
+                text = if (estaEnTurno) "Desliza para Salida" else "Desliza para Registrarte",
+                onConfirm = {
+                    scope.launch {
+                        try {
+                            val lat = settings.getDouble("last_lat", 0.0)
+                            val lon = settings.getDouble("last_lon", 0.0)
+
+                            val request = RequestEntradaSalida(
+                                IdUsuario = SessionManager.getUserId(),
+                                Latitud = lat,
+                                Longitud = lon,
+                                UbicacionDetalle = "Ubicación desde App Movil",
+                                Fuente = "APP_MOVIL"
+                            )
+
+                            val response = HomeApi.RegistarEntrada(request, estaEnTurno)
+
+                            if (response.status == "Success" || response.status == "Offline") {
+                                estaEnTurno = !estaEnTurno
+                                showSuccess = true
+                                settings.putBoolean("statusTurno", estaEnTurno)
+                                cargarDatos() // Recargar siempre para ver registros locales o del servidor
+                                println("Registro procesado: ${response.message}")
+                            } else {
+                                println("Error en registro: ${response.message}")
+                            }
+                        } catch (e: Exception) {
+                            println("Error de red: ${e.message}")
+                        }
+                    }
+                }
+            )
+
+            Text(
+                text = "Asegúrate de estar en tu zona de trabajo",
+                modifier = Modifier.padding(top = 12.dp),
+                color = Color.LightGray,
+                fontSize = 12.sp
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
