@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.kmp.asistencias.Components.AttendanceMap
@@ -44,6 +46,7 @@ import com.kmp.asistencias.Utils.LocationProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(onNavigateToHistory: () -> Unit) {
     val scope = rememberCoroutineScope()
@@ -52,12 +55,20 @@ fun Home(onNavigateToHistory: () -> Unit) {
 
     var tienePermiso by remember { mutableStateOf(true) }
 
+    // Cada vez que la app vuelve a primer plano (ej. regresar de Configuración)
+    // se re-verifica la ubicación para mostrar u ocultar el mapa sin reiniciar la app
+    LifecycleResumeEffect(Unit) {
+        scope.launch { LocationProvider.obtenerUbicacion() }
+        onPauseOrDispose { }
+    }
+
 
     var fecha by remember { mutableStateOf("") }
     var hora by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("...") }
     var fotoUrl by remember { mutableStateOf<String?>(null) }
     var showSuccess by remember { mutableStateOf(false) }
+    var isRefreshing by remember { mutableStateOf(false) }
     var actividades by remember { mutableStateOf<List<ActividadUsuario>>(emptyList()) }
 
     fun cargarDatos() {
@@ -130,6 +141,18 @@ fun Home(onNavigateToHistory: () -> Unit) {
     val scrollState = rememberScrollState()
 
     Box(modifier = Modifier.fillMaxSize()) {
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                scope.launch {
+                    isRefreshing = true
+                    cargarDatos()
+                    LocationProvider.obtenerUbicacion() // re-verifica permiso y mapa
+                    isRefreshing = false
+                }
+            },
+            modifier = Modifier.fillMaxSize()
+        ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -392,6 +415,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
 
 
             Spacer(modifier = Modifier.height(120.dp))
+        }
         }
 
         SuccessOverlay(
