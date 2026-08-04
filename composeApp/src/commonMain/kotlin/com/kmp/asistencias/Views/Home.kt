@@ -304,7 +304,7 @@ fun Home(onNavigateToHistory: () -> Unit) {
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = "Para que la aplicación acceda a tu ubicación, ve a Configuración > permitir que Asistencia Jorchav acceda a > Ubicacion . Asegúrate de que la Localización esté activada",
+                            text = "No pudimos acceder a tu ubicación. Activa la Localización del dispositivo y concede el permiso de Ubicación a Asistencia Jorchav desde los ajustes del sistema.",
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 14.sp,
                             textAlign = TextAlign.Center,
