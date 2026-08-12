@@ -16,6 +16,7 @@ data class PerfilUsuarioResponse(
         val perfil: List<Perfil>,
         val horasHoy: String,
         val porcentajePuntualidad: Double,
+        val horasextras: Double? = 0.0,
         val ultimosRegistros: List<UltimoRegistro>
     )
 

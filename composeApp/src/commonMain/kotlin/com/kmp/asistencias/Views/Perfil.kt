@@ -217,9 +217,9 @@ fun Perfil(onLogout: () -> Unit) {
                 ) {
                     StatCard(
                         icon = Icons.Default.Star,
-                        label = "Puntualidad",
-                        value = perfilData?.data?.porcentajePuntualidad?.toString() ?: "0",
-                        unit = "%",
+                        label = "Horas Extras", // label = "Puntualidad",
+                        value = perfilData?.data?.horasextras?.toString() ?: "0", // value = perfilData?.data?.porcentajePuntualidad?.toString() ?: "0",
+                        unit = "hrs", // unit = "%",
                         modifier = Modifier.weight(1f)
                     )
                     StatCard(
